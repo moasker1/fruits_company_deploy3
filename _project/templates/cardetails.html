@@ -1,0 +1,371 @@
+{% load static %}
+{% load i18n %}
+{% language 'ar' %}
+{% load arabic_numbers %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="{% static "css/main.css" %}">
+    <title>تفاصيل النقلة</title>
+</head>
+<body>
+    <header>
+        <div class="main">
+            <img src="{% static "images/logo.png" %}" alt="">
+            <h1>تفاصيل النقلة</h1>
+        </div>
+        <a href="{% url "sellcon" container.id %}"><i class="fa-solid fa-arrow-left"></i></a>
+    </header>
+    <!-- تعديل عملية البيع -->
+    <div class="window" id="editcarsell">
+        <i id="closesellcon" class="fa-solid fa-xmark close"></i>
+        <h2>تعديل عملية البيع</h2>
+        <div class="inputs">
+            <input type="number" placeholder="العدد">
+            <input type="number" placeholder="الوزن">
+            <input type="number" placeholder="السعر">
+            <input type="text" placeholder="اسم البائع">
+            <select name="kind" id="">
+                <option value="تفاح">تفاح</option>
+            </select>
+            <select name="" id="">
+                <option value="">صناديق صغيرة</option>
+                <option value="">صناديق كبيرة</option>
+            </select>
+            <button>تعديل</button>
+        </div>
+    </div>
+    <!-- طباعه الفاتوره -->
+    <div id="printcon" class="window" style="display: none;">
+        <i id="closeprintcon" class="fa-solid fa-xmark close"></i>
+        <i id="printbtn" class="fa-solid fa-print printing"></i>
+        <div id="printcontent">
+            <img src="{% static "images/printgamal.png" %}" alt="">
+            <table>
+                <thead>
+                    <tr>
+                        <th>الصنف</th>
+                        <th>العدد</th>
+                        <th>السعر</th>
+                        <th>الوزن</th>
+                        <th>الاجمالى</th>
+                    </tr>
+                </thead>
+                <tbody id="tablebody">
+                    <h2>مطلوب من : <span>{{container.supplier.name}}</span></h2><br>
+                    <h2>اصناف النقلة</h2><br>
+                    {% for container_item in container.containeritem_set.all %}
+                    <tr>
+                        <td>{{ container_item.item.name }}</td>
+                        <td>{{ container_item.count|arabic_numbers }}</td>
+                        <td>{{ container_item.price|arabic_numbers }}</td>
+                        <td>{{ container_item.item_weight|arabic_numbers }} كيلو جرام </td>
+                        <td>{{ container_item.total_item_price|arabic_numbers }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="detcon">
+                <div>
+                    <h2>الخصومات</h2>
+                    <ul>
+                        <li class="head">الاجمالى : <span>{{container.win|arabic_numbers}} جنيه </span></li>
+                        <li>العمولة : <span>{{container.commission|arabic_numbers}} جنيه </span></li>
+                        <li>مشال : <span>{{container.carry|arabic_numbers}} جنيه </span></li>
+                        <li>ايجار عدة : <span>{{container.tool_rent|arabic_numbers}} جنيه </span></li>
+                    </ul>
+                </div>
+                <div>
+                    <h2>المصروفات</h2>
+                    <table class="mintable1">
+                        <thead>
+                            <tr>
+                                <th>المبلغ</th>
+                                <th>النوع</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablebody">
+                            {% for expense in expenses %}
+                            <tr>
+                                <td>{{expense.expense|arabic_numbers}}</td>
+                                <td>{{expense.expense_type}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <table class="mintable1">
+                        <thead>
+                            <tr>
+                                <th>صافى المبلغ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablebody">
+                            <tr>
+                                <td>اجمالى النقلة : <span >{{container.total_con_price|arabic_numbers}}</span> جنيه</td>
+                                <td style="display: none;">اجمالى النقلة : <span id="span1">{{container.total_con_price}}</span> جنيه</td>
+                            </tr>
+                            <tr>
+                                <td>الخصومات : <span>{{container.win|arabic_numbers}}</span> جنيه</td>
+                                <td style="display: none;">الخصومات : <span id="span2">{{container.win}}</span> جنيه</td>
+                            </tr>
+                            {% for expense in expenses %}
+                            <tr>
+                                <td>المصروفات : <span>{{expense.expense|arabic_numbers}}</span> جنيه</td>
+                                <td style="display: none;">المصروفات : <span id="span3">{{expense.expense}}</span> جنيه</td>
+                            </tr>
+                            {% endfor %}
+                            <tr>
+                                <td>الصافى : <span id="spantotal"></span> جنيه</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>    
+    </div>
+    <!-- اضافة خصومات للنقلة -->
+    <form method ="POST" action="{% url "condetails" container.id %}" class="window" id="profits">
+        {% csrf_token %}
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+        <i id="closeprofits" class="fa-solid fa-xmark close"></i>
+        <h2>  اضافة خصومات للنقلة  -----   يرجى ادخال نسبة مئوية فقط في خانة العمولة </h2><h2></h2>
+        <div class="inputs">
+            <input type="number" name="commission" value="{{container.commission}}" id="" placeholder="العمولة">
+            <input type="number" name="carry" value="{{container.carry}}" id="" placeholder="مشال">
+            <input type="number" name="tool_rent" value="{{container.tool_rent}}" id="" placeholder="ايجار عدة">
+            <button name="profits_submit" id="addprofit">اضافة</button>
+        </div>
+    </form>
+    <!-- اضافة مصروفات للنقلة -->
+    <form method ="POST" action="{% url "condetails" container.id %}" class="window" id="loses">
+        {% csrf_token %}
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+        <i id="closeloses" class="fa-solid fa-xmark close"></i>
+        <h2>اضافة مصروفات للنقلة</h2>
+        <div class="inputs">
+            <input type="number" name="expense" id="" placeholder="المبلغ">
+            <input type="text" name="expense_type" id="" placeholder="نوع المصروف">
+            <input type="text" name="expense_notes" id="" placeholder="ملاحظات">
+            <button name="loses_submit" id="addlose">اضافة</button>
+        </div>
+        <div class="table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>المبلغ</th>
+                        <th>النوع</th>
+                        <th>ملاحظة</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="tablebody">
+                    {% for expense in expenses %}
+                    <tr>
+                        <td>{{expense.expense|arabic_numbers}}</td>
+                        <td>{{expense.expense_type}}</td>
+                        <td>{{expense.expense_notes}}</td>
+                        <td><a href="{% url "containerexpensesdelete" expense.id %}" id="deletecar" class="btn"  style="color: #FF0000;" ><i class="fa-solid fa-trash"></i></a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </form>
+    <div class="detailscon">
+        <h2> اسم العميل: <span>{{container.supplier.name}}</span></h2>
+        <h2>التاريخ : <span>{{container.date|date:"20y/m/d"|arabic_numbers}}</span></h2>
+        <h2>رقم النقلة : <span>{{ container.id|arabic_numbers }}</span></h2>
+        <h2>عدد الاصناف : <span>{{ container.num_of_items|arabic_numbers }}</span></h2>
+        <h2>العدد : <span>{{ container.main_total_count|arabic_numbers }}</span></h2>
+        <a href="{% url "sellcon" container.id %}"  id="sellcar" class="sellingbtn" style="background-color: #00C2F4; text-decoration:none;">ترحيلات النقلة</a>
+    </div>
+    <div class="bigcon">
+        <div class="right">
+            <button id="sales">خصومات</button>
+            <ul>
+                <li class="head">الربح : <span>{{container.win|arabic_numbers}} جنيه </span></li>
+                <li>العمولة : <span>{{container.commission|arabic_numbers}} جنيه </span></li>
+                <li>مشال : <span>{{container.carry|arabic_numbers}} جنيه </span></li>
+                <li>ايجار عدة : <span>{{container.tool_rent|arabic_numbers}} جنيه </span></li>
+            </ul>
+            <button id="deleteoradd" class="deletaadd">مصروفــات</button>
+            <button id="print">طباعة</button>
+        </div>
+        <div class="left">
+            <div class="detailscon">
+                <h2>العدد المباع : <span>{{container.total_sold_count|arabic_numbers}} </span></h2>
+                <h2>العدد المتبقى : <span>{{container.total_remaining_count|arabic_numbers}}</span></h2>
+                <h2>الوزن : <span>{{container.total_sale_weight|arabic_numbers}}</span></h2>
+                <h2>اجمالى البيع : <span>{{container.total_sale_price|arabic_numbers}}</span></h2>
+                <h2> اجمالى النقلة : <span>{{container.total_con_price|arabic_numbers}}</span></h2>
+                <h2>فرق الوزن : <span>{{container.weight_difference|arabic_numbers}}</span></h2>
+                <h2>فرق الفاتورة : <span>{{container.price_difference|arabic_numbers}}</span></h2>
+            </div>
+            <div class="table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الصنف</th>
+                            <th>العدد</th>
+                            <th>السعر</th>
+                            <th>الوزن</th>
+                            <th>الاجمالى</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablebody">
+                        <h2>اصناف النقلة</h2><br>
+                        {% for container_item in container.containeritem_set.all %}
+                        <tr>
+                            <td>{{ container_item.item.name }}</td>
+                            <td>{{ container_item.count|arabic_numbers }}</td>
+                            <td>{{ container_item.price|arabic_numbers }}</td>
+                            <td>{{ container_item.item_weight|arabic_numbers }}</td>
+                            <td>{{ container_item.total_item_price|arabic_numbers }}</td>
+                            <td><a href="{% url "containeritemdelete" container_item.id %}" id="deletecar" class="btn"  style="color: #FF0000;" ><i class="fa-solid fa-trash"></i></a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- <button id="deletetable" class="deletetable">حذف البيان</button> -->
+        </div>
+    </div>
+    <script>
+        // When the "sales" button is clicked, show the "profits" window
+    document.getElementById("sales").addEventListener("click", function() {
+    document.getElementById("profits").style.display = "flex";
+    });
+    
+    // When the "deleteoradd" button is clicked, show the "loses" window
+    document.getElementById("deleteoradd").addEventListener("click", function() {
+    document.getElementById("loses").style.display = "flex";
+    });
+    // Close the "profits" window when the "closeprofits" icon is clicked
+    document.getElementById("closeprofits").addEventListener("click", function() {
+    document.getElementById("profits").style.display = "none";
+    });
+    
+    // Close the "loses" window when the "closeloses" icon is clicked
+    document.getElementById("closeloses").addEventListener("click", function() {
+    document.getElementById("loses").style.display = "none";
+    });
+    document.getElementById('print').addEventListener('click',function(){
+    document.getElementById('printcon').style.display='flex';
+    });
+    document.getElementById('closeprintcon').addEventListener('click',function(){
+        document.getElementById('printcon').style.display='none';
+    })
+    document.getElementById('printbtn').addEventListener('click', function(){
+        printDiv('printcontent')    
+    })
+    function printDiv(divId) {
+        var divToPrint = document.getElementById(divId);
+        var newWin = window.open('', '_blank');
+        newWin.document.open();
+        newWin.document.write(`<html><head><title>Print</title>
+        <link rel="stylesheet" href="{% static "css/main.css" %}">
+        <style>
+        body{direction:rtl;}
+        #printcontent table{
+        width: 90%;
+        text-align: center;
+        border-radius: 10px;
+        overflow: hidden;
+        }
+        #printcontent table thead{
+            background-color:#74C785;
+        }
+        #printcontent table th{
+            font-size: 20px;
+            color: #000;
+            padding: 5px;
+            border-bottom: 1px solid #625D5D;
+        }
+        #printcontent table td{
+            font-size: 20px;
+            border-bottom: 1px solid #625D5D;
+            padding: 10px;
+            color: #625D5D;
+        }
+        #printcontent table td .btn{
+            border: none;
+            background-color: transparent;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        #printcontent{
+            top: 10%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            direction: rtl;
+        }
+        #printcontent .detcon{
+            margin: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: start;
+            flex-wrap: wrap;
+            flex-direction: row;
+        }
+        #printcontent .detcon div{width: 40%; text-align: center;}
+        #printcontent .detcon table,.detcon ul{
+            width: 100%;
+            text-align: center;
+        }
+        #printcontent img{
+            width: 50%;
+        }
+        #printcontent h2{
+            margin: 30px;
+        }
+        #printcontent ul{
+            width: 80%;
+            text-align: start;
+            list-style: none;
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        #printcontent ul .head{
+            background-color:#74C785;
+            color: #000;
+        }
+        #printcontent ul li{
+            padding: 10px ;
+            font-size: 20px;
+            color: #040404;
+            font-weight: 600;
+            border-bottom: 1px solid #625D5D;
+            text-align: right;
+        }
+        </style>
+        </head><body>`);
+        newWin.document.write(divToPrint.outerHTML);
+        newWin.document.write('</body></html>');
+        newWin.document.close();
+        newWin.print();
+        newWin.close();
+        window.location.href="{% url 'condetails' container.id %}"
+    }
+    let span1 = document.getElementById('span1').innerHTML
+    let span2 = document.getElementById('span2').innerHTML
+    let span3 = document.getElementById('span3').innerHTML
+    console.log(span1,span2,span3)
+    let totlacar = parseFloat(span1)-parseFloat(span2)-parseFloat(span3);
+    document.getElementById('spantotal').innerHTML = totlacar;
+    </script>
+</body>
+</html>
+{% endlanguage %}

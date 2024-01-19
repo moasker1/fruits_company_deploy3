@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="{% static "css/main.css" %}">
+    <title>الصفحة الرئيسية</title>
+</head>
+<body>
+    <header>
+        <div class="main">
+            <img src="{% static "images/logo.png" %}" alt="">
+            <h1>الصفحة الرئيسية</h1>
+        </div>
+        <div class="username">
+            <h2>مرحبـــــــًا {{user.username}}<h2>
+                <a href="{% url "logout" %}"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
+            </div>
+    </header>
+    <section class="mainpage">
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <img src="{% static "" %}images/login3.png">
+        <i class="fa-solid fa-angles-down"></i>
+    </section>
+    <section class="secpage">
+        <div class="div3">
+            <img src="{% static "images/photo_2023-12-25_18-17-44.jpg" %}" alt="">
+            <div class="buttons">
+                <ul>
+                    <li><a href="{% url "suppliersaccounts" %}">حسابات العملاء <i class="fa-solid fa-arrow-left"></i></a></li>
+                    <li><a href="{% url "selleraccounts" %}">حسابات البائعين <i class="fa-solid fa-arrow-left"></i></a></li>
+                    <li><a href="{% url "suppliersort" %}">كشف تحصيل العملاء <i class="fa-solid fa-arrow-left"></i></a></li>
+                    <li><a href="{% url "sellersort" %}">كشف تحصيل البائعين <i class="fa-solid fa-arrow-left"></i></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="div1">
+            <img src="{% static "images/photo_2023-12-25_18-17-46 (2).jpg" %}" alt="">
+            <div class="buttons">
+                <ul>
+                    <li><a href="{% url "addcontainer" %}">النـــقلات <i class="fa-solid fa-arrow-left"></i></a></li>
+                    <li><a href="{% url "today" %}">نقلات اليوم <i class="fa-solid fa-arrow-left"></i></a></li>
+                    <li><a href="{% url "remain" %}">النقلات المتبقية <i class="fa-solid fa-arrow-left"></i></a></li>
+                    <li><a href="{% url "finished" %}">النقلات المنتهية <i class="fa-solid fa-arrow-left"></i></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="div5">
+            <img src="{% static "images/photo_2023-12-25_18-17-42.jpg" %}" alt="">
+            <div class="buttons">
+                <ul>
+                    <li><a href="{% url "profits" %}">اضافة تحصيل <i class="fa-solid fa-arrow-left"></i></a></li>
+                    <li><a href="{% url "loses" %}">اضافة مصروف <i class="fa-solid fa-arrow-left"></i></a></li>
+                    <li><a href="{% url "daymoney" %}">تقفيل اليوم <i class="fa-solid fa-arrow-left"></i></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="div2">
+            <img src="{% static "images/photo_2023-12-25_18-17-46.jpg" %}" alt="">
+            <div class="buttons">
+                <ul>
+                    <li><a href="{% url "items" %}">اضف صنف <i class="fa-solid fa-arrow-left"></i></a></li>
+                    <li><a href="{% url "suppliersaccounts" %}">اضف عميل <i class="fa-solid fa-arrow-left"></i></a></li>
+                    <li><a href="{% url "selleraccounts" %}">اضف بائع <i class="fa-solid fa-arrow-left"></i></a></li>
+                </ul>
+            </div>
+        </div>
+        {% comment %} <div class="div2">
+            <img src="{% static "images/photo_2023-12-25_18-17-46.jpg" %}" alt="">
+            <div class="buttons">
+                <ul>
+                    <li><a href="">اضف خارج عدة <i class="fa-solid fa-arrow-left"></i></a></li>
+                    <li><a href="">اضف تحصيل عدة <i class="fa-solid fa-arrow-left"></i></a></li>
+                    <li><a href="">اضف هالك عدة <i class="fa-solid fa-arrow-left"></i></a></li>
+                </ul>
+            </div> {% endcomment %}
+    </section>
+    <!-- <script src="js/anime.min.js"></script>
+    <script>
+        const container=document.querySelector(".mainpage");
+        for(var i=0;i<100;i++){
+            const blocks=document.createElement("div");
+            blocks.classList.add("block");
+            container.appendChild(blocks)
+        };
+        function AnimateBlocks(){
+            anime({
+                targets:".block",
+                rotateX:function(){
+                    return anime.random(-90,90)
+                },
+                translateX: function(){
+                    return anime.random(-700,700);
+                },
+                translateY: function(){
+                    return anime.random(-500,500);
+                },
+                scale: function(){
+                    return anime.random(1,2);
+                },
+                easing:"linear",
+                duration:3000,
+                delay:anime.stagger(10),
+                complete:AnimateBlocks,
+            })
+        };
+        AnimateBlocks();
+    </script> -->
+</body>
+</html>
