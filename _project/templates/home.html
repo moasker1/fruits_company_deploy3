@@ -28,14 +28,14 @@
         <i class="fa-solid fa-angles-down"></i>
     </section>
     <section class="secpage">
-        <div class="div3">
-            <img src="{% static "images/photo_2023-12-25_18-17-44.jpg" %}" alt="">
+        <div class="div2">
+            <img src="{% static "images/photo_2023-12-25_18-17-46.jpg" %}" alt="">
             <div class="buttons">
                 <ul>
-                    <li><a href="{% url "suppliersaccounts" %}">حسابات العملاء <i class="fa-solid fa-arrow-left"></i></a></li>
-                    <li><a href="{% url "selleraccounts" %}">حسابات البائعين <i class="fa-solid fa-arrow-left"></i></a></li>
-                    <li><a href="{% url "suppliersort" %}">كشف تحصيل العملاء <i class="fa-solid fa-arrow-left"></i></a></li>
-                    <li><a href="{% url "sellersort" %}">كشف تحصيل البائعين <i class="fa-solid fa-arrow-left"></i></a></li>
+                    <li><a href="{% url "profits" %}">اضافة تحصيل <i class="fa-solid fa-arrow-left"></i></a></li>
+                    <li><a href="{% url "items" %}">اضف صنف <i class="fa-solid fa-arrow-left"></i></a></li>
+                    <li><a href="{% url "suppliersaccounts" %}">اضف عميل <i class="fa-solid fa-arrow-left"></i></a></li>
+                    <li><a href="{% url "selleraccounts" %}">اضف بائع <i class="fa-solid fa-arrow-left"></i></a></li>
                 </ul>
             </div>
         </div>
@@ -43,10 +43,19 @@
             <img src="{% static "images/photo_2023-12-25_18-17-46 (2).jpg" %}" alt="">
             <div class="buttons">
                 <ul>
-                    <li><a href="{% url "addcontainer" %}">النـــقلات <i class="fa-solid fa-arrow-left"></i></a></li>
+                    <li><a href="{% url "addcontainer" %}">جميع النقلات <i class="fa-solid fa-arrow-left"></i></a></li>
                     <li><a href="{% url "today" %}">نقلات اليوم <i class="fa-solid fa-arrow-left"></i></a></li>
                     <li><a href="{% url "remain" %}">النقلات المتبقية <i class="fa-solid fa-arrow-left"></i></a></li>
                     <li><a href="{% url "finished" %}">النقلات المنتهية <i class="fa-solid fa-arrow-left"></i></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="div3">
+            <img src="{% static "images/photo_2023-12-25_18-17-44.jpg" %}" alt="">
+            <div class="buttons">
+                <ul>
+                    <li><a href="{% url "suppliersaccounts" %}">حسابات العملاء <i class="fa-solid fa-arrow-left"></i></a></li>
+                    <li><a href="{% url "selleraccounts" %}">حسابات البائعين <i class="fa-solid fa-arrow-left"></i></a></li>
                 </ul>
             </div>
         </div>
@@ -54,19 +63,10 @@
             <img src="{% static "images/photo_2023-12-25_18-17-42.jpg" %}" alt="">
             <div class="buttons">
                 <ul>
-                    <li><a href="{% url "profits" %}">اضافة تحصيل <i class="fa-solid fa-arrow-left"></i></a></li>
+                    <li><a href="{% url "suppliersort" %}">كشف تحصيل العملاء <i class="fa-solid fa-arrow-left"></i></a></li>
+                    <li><a href="{% url "sellersort" %}">كشف تحصيل البائعين <i class="fa-solid fa-arrow-left"></i></a></li>
                     <li><a href="{% url "loses" %}">اضافة مصروف <i class="fa-solid fa-arrow-left"></i></a></li>
                     <li><a href="{% url "daymoney" %}">تقفيل اليوم <i class="fa-solid fa-arrow-left"></i></a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="div2">
-            <img src="{% static "images/photo_2023-12-25_18-17-46.jpg" %}" alt="">
-            <div class="buttons">
-                <ul>
-                    <li><a href="{% url "items" %}">اضف صنف <i class="fa-solid fa-arrow-left"></i></a></li>
-                    <li><a href="{% url "suppliersaccounts" %}">اضف عميل <i class="fa-solid fa-arrow-left"></i></a></li>
-                    <li><a href="{% url "selleraccounts" %}">اضف بائع <i class="fa-solid fa-arrow-left"></i></a></li>
                 </ul>
             </div>
         </div>

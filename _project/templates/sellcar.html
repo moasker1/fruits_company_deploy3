@@ -116,7 +116,7 @@
                 <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
             {% endfor %}
         </ul>
-    
+        <label for="container_item">اصناف النقلة :</label>
         <select name="container_item" id="container_item">
             <option value="">أختر الصنف</option>
             {% for item in container.containeritem_set.all %}
@@ -124,18 +124,33 @@
             {% endfor %}
         </select>
             <input type="hidden" name="container_id" value="{{ container.id }}">
+            <label for="">الوزن :</label>
             <input name="weight" type="number" step="0.01" placeholder="الوزن">
+            <label for="">العدد :</label>
             <input name="count" type="number" placeholder="العدد">
+            <label for="">السعر :</label>
             <input name="price" type="number" step="0.001" placeholder="السعر" id="priceInput">
-            <select name="seller" id="seller">
-                <option value="اختر البائع">أختر البائع</option>
+            <label for="">اسم البائع :</label>
+            <nav class="wraper">
+                <input name='seller' type="text" id="search_bar" placeholder="اسم البائع">
+                <div class="search_res" id="search_res">
+                    <table>
+                        <th></th>
+                        <tbody id="suplliersul">
+                            {% for seller in sellers %}
+                            <tr><td>{{ seller.name }}</td></tr>
+                            {% endfor %}
+                        </table>
+                    </table>
+                </div>
+            </nav>
+                <!-- <option value="اختر البائع">أختر البائع</option>
                 {% for seller in sellers %}
                     <option value="{{ seller.name }}">{{ seller.name }}</option>
-                {% endfor %}
-            </select>
+                {% endfor %} -->
             <select name="tool" id="">
-                <option value="صناديق صغيرة">صناديق صغيرة</option>
                 <option value="صماديق كبيرة">صناديق كبيرة</option>
+                <option value="صناديق صغيرة">صناديق صغيرة</option>
             </select>
             <input name='date' type="date" placeholder="المنظقة">
             <button type="submit">تم</button>
@@ -159,7 +174,6 @@
                         <th>الصنف</th>
                         <th>التاريخ</th>
                         <th></th>
-                        <th></th>
                     </tr>
                 </thead>
                 <tbody id="tablesellbody">
@@ -181,6 +195,7 @@
         </div>
     </div>
     <!-- البحث عن عمليات البيع باستخدام اسم البائع -->
+    <script src="{% static "js/select.js" %}"></script>
     <script>
         let tablebody = document.getElementById('tablesellbody')
         let searchbar = document.getElementById('searchbar')

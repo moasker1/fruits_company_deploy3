@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .models import Supplier, Seller, Container, Item, ContainerItem, Sale, Payment, Lose, ContainerExpense
+from .models import Supplier, Seller, Container, Item, ContainerItem, Sale, Payment, Lose, ContainerExpense, ContainerBill
 from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Sum
@@ -40,8 +40,6 @@ def home(request):
 #====================================================================================================================
 @login_required(login_url="login")
 def add_container(request):
-    container = Container.objects.all()
-    context = {'container':container}
     if request.method == "POST":
         supplier_name = request.POST.get('supplier')
         date_str = request.POST.get('date')
@@ -73,11 +71,12 @@ def add_container(request):
 
         messages.success(request, "تم إضافة نقلة جديدة بنجاح")
         return redirect('addcontainer')
-
-
-    containers = Container.objects.all()
-
-    context = {'containers': containers}
+    
+    container = Container.objects.all()
+    context = {
+        'containers':container,
+        'supplys': Supplier.objects.all(),
+        }
     return render(request, 'add.html', context)
 #====================================================================================================================
 def container_update(request, id):
@@ -143,11 +142,22 @@ def container_delete(request,id):
 def container_details(request, id):
     container = get_object_or_404(Container, pk=id)
     expenses = ContainerExpense.objects.filter(container=container)
+    container_bills = ContainerBill.objects.filter(container=container)
+    container_items = ContainerItem.objects.filter(container=container)
 
+    # Fetching total based on container_bills data
+    total_of_nakla = sum(bill.total_bill_row for bill in container_bills)
+
+    # Calculate total_bill_price for the same specific container
+    total_bill_price = sum(bill.total_bill_row for bill in container_bills)
 
     context = {
         'container': container,
         'expenses': expenses,
+        'container_bills': container_bills,
+        'container_items': container_items,
+        'total_of_nakla': total_of_nakla,
+        'total_bill_price': total_bill_price,  # Add this to the context
     }
 
     if request.method == "POST":
@@ -182,13 +192,70 @@ def container_details(request, id):
                     expense_type=expense_type,
                     expense_notes=expense_notes,
                 )
-            messages.success(request, 'تمت اضافة المصروف بنجاح', extra_tags='success')
+                messages.success(request, 'تمت اضافة المصروف بنجاح', extra_tags='success')
 
+        elif 'add_bill_submit' in request.POST:
+            count = request.POST['count']
+            weight = request.POST['weight']
+            price = request.POST['price']
+            container_item_id = request.POST['container_item']
+
+            if not (count and weight and price and container_item_id):
+                messages.error(request, 'برجاء ادخال كافة البيانات', extra_tags='error')
+            else:
+                container_item = get_object_or_404(ContainerItem, pk=container_item_id)
+
+                # Create a new ContainerBill instance
+                ContainerBill.objects.create(
+                    container=container,
+                    container_item=container_item,
+                    count=count,
+                    weight=weight,
+                    price=price,
+                )
+
+                messages.success(request, 'تم ادخال خانة فاتورة نقلة', extra_tags='success')
 
         return redirect("condetails", id=id)
 
-    
     return render(request, 'cardetails.html', context)
+#====================================================================================================================
+def container_bill_update(request, id):
+    container_bill = get_object_or_404(ContainerBill, id=id)
+    container_items = ContainerItem.objects.all()  # You may need to filter this based on your requirements
+
+    if request.method == 'POST':
+        # Handle the form submission for updating the ContainerBill
+        count = request.POST.get('count')
+        weight = request.POST.get('weight')
+        price = request.POST.get('price')
+        container_item_id = request.POST.get('container_item')
+
+        # Validate and update the ContainerBill instance
+        if not (count and weight and price and container_item_id):
+            pass
+
+        container_item = get_object_or_404(ContainerItem, pk=container_item_id)
+        container_bill.count = count
+        container_bill.weight = weight
+        container_bill.price = price
+        container_bill.container_item = container_item
+        container_bill.save()
+
+        return redirect('condetails', id=container_bill.container.id)
+
+    context = {
+        'container_bill': container_bill,
+        'container_items': container_items,
+    }
+    return render(request, 'containerbillupdate.html', context)
+#====================================================================================================================
+def container_bill_delete(request, id):
+    container_bill = get_object_or_404(ContainerBill, id=id)
+    if request.method == "POST":
+        container_bill.delete()
+        return redirect("condetails", id=container_bill.container.id)
+    return render(request, 'containerbilldelete.html')
 #====================================================================================================================
 def container_expenses_delete(request,id):
     containerexpensesdelete = get_object_or_404(ContainerExpense, id=id )
@@ -199,7 +266,11 @@ def container_expenses_delete(request,id):
 #====================================================================================================================
 def container_items(request, id):
     container = get_object_or_404(Container, pk=id)
-
+    items = Item.objects.all()
+    context = {
+        'container': container,
+        'items' : items
+    }
     if request.method == 'POST':
         form_data = request.POST
 
@@ -246,7 +317,7 @@ def container_items(request, id):
                 messages.success(request, "تم إضافة الصنف بنجاح")
                 return redirect('containeritems', id)
 
-    return render(request, 'containerItems.html', {'container': container})
+    return render(request, 'containerItems.html',context)
 #====================================================================================================================
 def containeritem_delete(request, id):
     container_item_delete = get_object_or_404(ContainerItem, id=id)
@@ -514,8 +585,10 @@ def loses_delete(request, id):
 @login_required(login_url="login")
 def profits(request):
     payments= Payment.objects.all()
+    sel = Seller.objects.all()
     context={
-        'payments':payments
+        'payments':payments,
+        'sels': sel,
     }
     if request.method == "POST":
         seller_name = request.POST.get('seller')  

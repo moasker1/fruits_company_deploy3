@@ -30,7 +30,13 @@
                     <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
                 {% endfor %}
             </ul>
-        <input type="text" name="item_name" id="" placeholder="اسم الصنف">
+            <select name="item_name">
+                <option value="">أختر الصنف</option>
+                {% for item in items %}
+                    <option value="{{ item.name }}">{{ item.name }}</option>
+                {% endfor %}
+            </select>
+        <!-- <input type="text" name="item_name" id="" placeholder="اسم الصنف"> -->
         <input type="number" name="count" step="0.01" id="" placeholder="العدد">
         <select name="tool" id="">
             <option value="صناديق صغيرة">صناديق صغيرة</option>

@@ -17,7 +17,7 @@
             <img src="{% static "images/logo.png" %}" alt="">
             <h1>حسابات العملاء</h1>
         </div>
-        <a href="#" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i></a>
+        <a href="{% url 'home' %}"><i class="fa-solid fa-arrow-left"></i></a>
     </header>
     <!-- تعديل عميل -->
     <form method="post" action="{% url 'suppliersaccounts' %}" class="window" id="editsuppliercon">

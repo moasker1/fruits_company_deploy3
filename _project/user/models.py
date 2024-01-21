@@ -114,11 +114,19 @@ class Container(models.Model):
     def num_of_items(self):
         return self.containeritem_set.count()
     
+    @property
+    def total_bill_price(self):
+        return self.containerbill_set.aggregate(total_bill_price=Sum('total_bill_row'))['total_bill_price'] or 0
+    @property
+    def total_bill_weight(self):
+        return self.containerbill_set.aggregate(total_bill_weight=Sum('weight'))['total_bill_weight'] or 0
+
+    
     # calculate the commission
     def save(self, *args, **kwargs):
         if self.commission is not None:
             commission_decimal = Decimal(self.commission)  # Convert to Decimal
-            self.commission = (commission_decimal / 100) * self.total_con_price
+            self.commission = (commission_decimal / 100) * self.total_bill_price
         super().save(*args, **kwargs)   
 
     def __str__(self):
@@ -235,3 +243,26 @@ class ContainerExpense(models.Model):
 
     def __str__(self):
         return f"Expense for Container {self.container.id} - {self.expense_type}"
+# ===================================================================================================
+class ContainerBill(models.Model):
+    container = models.ForeignKey(Container, on_delete=models.CASCADE)
+    container_item = models.ForeignKey(ContainerItem, on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    weight = models.DecimalField(max_digits=10, decimal_places=2)
+    count = models.PositiveIntegerField()
+    total_bill_row = models.DecimalField(max_digits=15, decimal_places=2, editable=False)
+
+    def save(self, *args, **kwargs):
+        try:
+            # Convert price and weight to float before multiplication
+            price = float(self.price)
+            weight = float(self.weight)
+
+            self.total_bill_row = price * weight
+        except (ValueError, TypeError):
+            # Handle the case where price or weight cannot be converted to float
+            self.total_bill_row = 0
+
+        super().save(*args, **kwargs)
+    def __str__(self):
+        return f"ContainerBill {self.id} for Container {self.container.id}"

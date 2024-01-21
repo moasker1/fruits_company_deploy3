@@ -20,16 +20,31 @@
         <a href="{% url 'home' %}"><i class="fa-solid fa-arrow-left"></i></a>
     </header>
     <!-- صفحة اضافة نقلات جديدة -->
+    
+    
     <div class="addnewcar">
         <form method="POST" class="addcar" action="{% url "addcontainer" %}">
             {% csrf_token %}
             <ul class="messages">
                 {% for message in messages %}
-                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
                 {% endfor %}
             </ul>
             <div>
-                <input name='supplier' type="text" placeholder="اسم العميل">
+                <nav class="wraper">
+                    <input name='supplier' type="text" id="search_bar" placeholder="اسم العميل">
+                    <div class="search_res" id="search_res">
+                        <table>
+                            <th></th>
+                            <tbody id="suplliersul">
+                                {% for sup in supplys %}
+                                <tr><td>{{sup.name}}</td></tr>
+                                {% endfor %}
+                            </table>
+                        </table>
+                    </div>
+                </nav>
+                <!-- <input name='supplier' type="text" placeholder="اسم العميل"> -->
                 <input name='date' type="date" placeholder="التاريخ">
                 <select name="type" id="">
                     <option value="عمولة">عمولة</option>
@@ -80,7 +95,7 @@
         </div>
     </div>
     <script src="{% static "js/search.js" %}"></script>
-    <script src="{% static "js/buttons.js" %}">
+    <script src="{% static "js/select.js" %}"></script>
     </script>
     {% comment %} <script>
         let addcon = document.getElementById('addcon')

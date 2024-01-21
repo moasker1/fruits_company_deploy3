@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Supplier, Seller, Container, Item, ContainerItem, Sale,Payment, Lose, ContainerExpense
+from .models import Supplier, Seller, Container, Item, ContainerItem, Sale,Payment, Lose, ContainerExpense, ContainerBill
 from django.db.models import Sum
 
 @admin.register(Supplier)
@@ -23,3 +23,4 @@ admin.site.register(Sale)
 admin.site.register(Payment)
 admin.site.register(Lose)
 admin.site.register(ContainerExpense)
+admin.site.register(ContainerBill)

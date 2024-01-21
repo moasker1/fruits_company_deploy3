@@ -15,6 +15,7 @@
 <body>
         <!-- نافذه اضافة التحصيلات  -->
         <form method ="POST" action="{% url "profits" %}" class="addcar" id="profitcon" style="display:flex;">
+            <a href="{% url 'home' %}"><i id="closeprintcon" class="fa-solid fa-xmark close"></i></a>
             <h1>التحصيلات</h1>
             {% csrf_token %}
             <ul class="messages">
@@ -23,7 +24,20 @@
                 {% endfor %}
             </ul>
             <div class="inputs">
-                <input type="text"  name="seller" id="seller" placeholder="البائع">
+                <nav class="wraper" style="top: 30%;">
+                    <input name='seller' type="text" id="search_bar" placeholder="اسم البائع">
+                    <div class="search_res" id="search_res">
+                        <table>
+                            <th></th>
+                            <tbody id="suplliersul">
+                                {% for sel in sels %}
+                                <tr><td>{{sel.name}}</td></tr>
+                                {% endfor %}
+                            </table>
+                        </table>
+                    </div>
+                </nav>
+                <!-- <input type="text"  name="seller" id="seller" placeholder="البائع"> -->
                 <input type="number" step="0.01" name="paid" placeholder="المبلغ">
                 <input type="number" step="0.01" name="forgive" placeholder="السماح">
                 <input type="date" name="date" id="">
@@ -66,14 +80,13 @@
             </div>
             </div>
         </div>
+        <script src="{% static "js/select.js" %}"></script>
         <script>
             let profitcon = document.getElementById('profitcon')
             let closeprofit  = document.getElementById('closeprofit')
             closeprofit.onclick=()=>{
                 window.location.href='home.html'
             }
-        </script>
-        <script>
             function goBack() {
                 window.history.back();
             }

@@ -54,7 +54,7 @@ header{
     direction: rtl;
     flex-direction: row;
     width: 100%;
-    z-index: 103;
+    /* z-index: 103; */
     padding: 5px 15px;
     /* background: linear-gradient(270deg,#726c30,#e8df77,#FEFBD8); */
     background:linear-gradient(270deg,#084413,#5A8030,#74C785) ;
@@ -230,7 +230,7 @@ header img{width: 40px;}
 .window img{
     width: 50%;
 }
-.window .close,.profitcon .close{
+.window .close,.profitcon .close,.addcar .close{
     position: absolute;
     top: 20px;
     left: 20px;
@@ -241,7 +241,7 @@ header img{width: 40px;}
     border-radius: 50%;
     transition: 0.5s ease;
 }
-.window .close:hover,.profitcon .close:hover{
+.window .close:hover,.profitcon .close:hover,.addcar .close:hover{
     color: #c10000;
 }
 .printing{
@@ -310,6 +310,7 @@ header img{width: 40px;}
     background-color: #fff;
     border-radius: 20px;
     box-shadow: 1px 1px 10px #625D5D;
+    position: relative;
 }
 .addcar div{
     justify-content: space-around;
@@ -497,6 +498,7 @@ header img{width: 40px;}
     align-items: center;
     gap: 10px;
     justify-content: space-around;
+    position: relative;
 }
 .sellcon input[type=number]{
     width: 10%;
@@ -514,7 +516,7 @@ header img{width: 40px;}
     border-radius: 10px;
     padding:10px 10px;
 }
-.sellcon button{
+.sellcon button ,.billinputs button{
     border: none;
     font-size: 20px;
     color: #fff;
@@ -525,7 +527,7 @@ header img{width: 40px;}
     cursor: pointer;
     transition: 0.5s ease;
 }
-.sellcon button:hover{
+.sellcon button:hover,.billinputs button:hover{
     transform: scale(1.1);
     opacity: 0.8;
 }
@@ -570,18 +572,19 @@ header img{width: 40px;}
     cursor: pointer;
     transition: 0.5s ease;
 }
-.bigcon .right button:hover{
+.bigcon .right button:hover ,.bigcon .left .deletetable:hover{
     background-color:rgb(72, 72, 255) ;
 }
 .bigcon .right .deletaadd{
     background-color: #c10000;
     width: 80%;
 }
-.bigcon .right .deletaadd:hover,.bigcon .left .deletetable:hover{
+.bigcon .right .deletaadd:hover{
     background-color: #760505;
 }
+
 .bigcon .left .deletetable{
-    background-color: #c10000;
+    background-color: #00C2F4;
     width: 60%;
     border: none;
     border-radius: 10px;
@@ -692,10 +695,101 @@ header img{width: 40px;}
     color: #D9D9D5;
     background: #00C2F4;
 }
+.addcar .wraper{
+    width: 30%;
+    height: fit-content;
+    background-color: #fff;
+    border-radius: 10px;
+    direction: rtl;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    z-index: 999;
+    overflow-x: hidden;
+    border: 2px solid #625D5D;
+    position: absolute;
+    top: 5%;
+}
+.sellcon .wraper{
+    width: 15%;
+    height: fit-content;
+    background-color: #fff;
+    border-radius: 10px;
+    direction: rtl;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    z-index: 999;
+    overflow-x: hidden;
+    border: 1px solid #625D5D;
+}
+.wraper #search_bar,.sellcon .wraper #search_bar{
+    background-color: transparent;
+    width: 100%;
+    padding: 5px 20px;
+    text-align: center;
+    font-size: 25px;
+    border-radius: 10px;
+    outline: none;
+    border: none;
+}
+.wraper table,.sellcon .wraper table{
+    width: 100%;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.wraper table tr td{
+    padding: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+.wraper table tr,.sellcon .wraper table tr{
+    width: 100%;
+}
+.wraper table tr:hover,.sellcon .wraper table tr:hover{
+    background-color: #4CAF50;
+    color: #fff;
+}
+.wraper .search_res{
+    display: none;
+    padding: 0;
+    max-height: 180px;
+    overflow-y: auto;
+    z-index: 10000;
+}
+.billinputs{
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: start;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.billinputs input[type='number'],.billinputs #kind-select{
+    width: 15%;
+    padding: 10px;
+    font-size: 20px;
+    border-radius:10px;
+    outline: none;
+    border: 1px solid #625D5D;
+}
+.billinputs #kind-select{
+    width: 20%;
+    padding: 10px;
+    font-size: 20px;
+    border-radius:10px;
+    border: 1px solid #625D5D;
+}
 .messages {
     list-style-type: none;
     padding: 10px;
     margin: 10px 0;
+    z-index: 10000;
 }
 
 .success {
@@ -707,7 +801,6 @@ header img{width: 40px;}
     padding: 10px 100px;
     border-radius: 20px;
     font-size: 25px;
-    z-index: 1000;
     animation-name: fadeOut;
     animation-duration: 1s;
     animation-fill-mode: forwards;
@@ -716,10 +809,9 @@ header img{width: 40px;}
 .success::before {
     content: "✅";
     margin-right: 10px;
-  }
+}
 .warning {
     background-color: #f44336;
-    color: white;
     color: white;
     position: fixed;
     top: 30px;
@@ -727,7 +819,6 @@ header img{width: 40px;}
     padding: 10px 100px;
     border-radius: 20px;
     font-size: 25px;
-    z-index: 1000;
     animation-name: fadeOut;
     animation-duration: 1s;
     animation-fill-mode: forwards;
@@ -737,14 +828,12 @@ header img{width: 40px;}
 .error {
     background-color: #f44336;
     color: white;
-    color: white;
     position: fixed;
     top: 30px;
     left: 35%;
     padding: 10px 100px;
     border-radius: 20px;
     font-size: 25px;
-    z-index: 1000;
     animation-name: fadeOut;
     animation-duration: 1s;
     animation-fill-mode: forwards;
