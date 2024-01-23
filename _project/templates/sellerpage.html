@@ -114,9 +114,10 @@
         </form>
 
     <div class="detailscon">
-        <h2> اسم البائع: <span>{{seller.name}}</span></h2>
+        <h2> اسم البائع : <span>{{seller.name}}</span></h2>
         <h2>التاريخ : <span>{{seller.date|date:"20y/m/d"|arabic_numbers}}</span></h2>
-        <h2>الاجمالي الكلي: <span>{{ seller.total_money|arabic_numbers }}</span></h2>
+        <h2>اجمالي الوجبات : <span>{{ seller.total_money|arabic_numbers }}</span></h2>
+        <h2>الرصيد الافتتاحى: <span>{{ seller.seller_opening_balance|arabic_numbers }}</span></h2>
         <h2>عليه: <span>{{ seller.on_him|arabic_numbers }}</span></h2>
         <button id="addpay" class="sellingbtn" style="background-color: #00C2F4;">اضافة دفع</button>
     </div>

@@ -32,7 +32,10 @@
             </ul>
             <div>
                 <nav class="wraper">
-                    <input name='supplier' type="text" id="search_bar" placeholder="اسم العميل">
+                    <div class="first">
+                        <input name='supplier' type="text" id="search_bar" placeholder="اسم العميل">
+                        <i id="arrow-down" class="fa-solid fa-angles-down"></i>
+                    </div>
                     <div class="search_res" id="search_res">
                         <table>
                             <th></th>
@@ -56,7 +59,7 @@
         <div class="title">
             <h1>جميع النقلات</h1>
         </div>
-        <div class="table">
+        <div class="table" style="width: 90%;">
             <input id="searchbar" type="text" placeholder="ابحث عن نقلة باستخدام اسم العميل">
             <table>
                 <thead>
@@ -66,8 +69,10 @@
                         <th>التاريخ</th>
                         <th>نوع النقلة</th>
                         <th>عدد الاصناف</th>
-                        <th>وزن النقلة</th>
-                        <th>اجمالي سعر النقلة</th>
+                        <th id="weightbtn">وزن النقلة</th>
+                        <th id="totbtn">اجمالى البيع</th>
+                        <th id="realtotbtn">الاجمالى الافتراضى</th>
+                        <th></th>
                         <th></th>
                         <th></th>
                         <th></th>
@@ -82,10 +87,14 @@
                         <td>{{container.date|date:"20y/m/d"|arabic_numbers}}</td>
                         <td>{{container.type}}</td>
                         <td>{{container.num_of_items|arabic_numbers}}</td>
+                        <td style="display: none;">{{container.con_weight}}</td>
                         <td>{{container.con_weight|arabic_numbers}} كيلو جرام</td>
+                        <td style="display: none;">{{container.total_sale_price}}</td>
+                        <td>{{container.total_sale_price|arabic_numbers}}</td>
                         <td>{{container.total_con_price|arabic_numbers}}</td>
-                        <td><a href="{% url "containeritems" container.id %}"style="text-decoration: none;" class="type" id="addkind">اصناف النقلة</a></td>
-                        <td><a href="{% url "sellcon" container.id %} "                   style="text-decoration: none;" class="type" id="sellbtn">ترحيل</a></td>
+                        <td><a href="{% url "containeritems" container.id %}" style="text-decoration: none;" class="type" id="addkind">اصناف النقلة</a></td>
+                        <td><a href="{% url "sellcon" container.id %} " style="text-decoration: none;" class="type" id="sellbtn">ترحيل</a></td>
+                        <td><a href="{% url "condetails" container.id %} " style="text-decoration: none;" class="dettype"  id="sellbtn">التفاصيل</a></td>
                         <td><a href="{% url "containerupdate" container.id %}" id="editcar" class="btn" style="color: #00F000;"><i class="fa-regular fa-pen-to-square"></i></a></td>
                         <td><a href="{% url "containerdelete" container.id %}" id="deletecar" class="btn"  style="color: #FF0000;" ><i class="fa-solid fa-trash"></i></a></td>
                     </tr>
@@ -97,30 +106,46 @@
     <script src="{% static "js/search.js" %}"></script>
     <script src="{% static "js/select.js" %}"></script>
     </script>
-    {% comment %} <script>
-        let addcon = document.getElementById('addcon')
-        let editcon = document.getElementById('editcon')
-        let editkind = document.getElementById('editkind')
-        editcon.style.display='none'
-        editkind.onclick=()=>{
-            addcon.style.display='none'
-            editcon.style.display='block'
-        }
-        editcon.onclick=()=>{
-            editcon.style.display='none'
-            addcon.style.display='block'
-        }
-        let sellbtn  = document.getElementById('sellbtn')
-        sellbtn.onclick=()=>{
-            window.location.href='sellcar.html'
-        }
-    </script> {% endcomment %}
     <script>
-        function goBack() {
-            window.history.back();
+        const tableBody = document.getElementById('tablebody');
+        const sortButton = document.getElementById('weightbtn'); 
+        const totbtn = document.getElementById('totbtn'); 
+        function sortByWeight(ascending) {
+        const rows = Array.from(tableBody.querySelectorAll('tr'));
+        // Clone rows to avoid DOM manipulation
+        const sortedRows = rows.slice();
+        sortedRows.sort((row1, row2) => {
+            const weight1 = parseFloat(row1.querySelectorAll('td')[5].textContent.trim());
+            const weight2 = parseFloat(row2.querySelectorAll('td')[5].textContent.trim());
+            return (weight1 - weight2) * (ascending ? 1 : -1);
+        });
+        // Clear and re-append sorted rows
+        tableBody.innerHTML = '';
+        sortedRows.forEach(row => tableBody.appendChild(row));
         }
+        function sortByPrice(ascending) {
+        const rows = Array.from(tableBody.querySelectorAll('tr'));
+        // Clone rows to avoid DOM manipulation
+        const sortedRows = rows.slice();
+        sortedRows.sort((row1, row2) => {
+            const weight1 = parseFloat(row1.querySelectorAll('td')[7].textContent.trim());
+            const weight2 = parseFloat(row2.querySelectorAll('td')[7].textContent.trim());
+            return (weight1 - weight2) * (ascending ? 1 : -1);
+        });
+        // Clear and re-append sorted rows
+        tableBody.innerHTML = '';
+        sortedRows.forEach(row => tableBody.appendChild(row));
+        }
+        let isAscending = true;
+        sortButton.addEventListener('click', () => {
+        isAscending = !isAscending;
+        sortByWeight(isAscending);
+        });
+        totbtn.addEventListener('click', () => {
+        isAscending = !isAscending;
+        sortByPrice(isAscending);
+        });
     </script>
-
 </body>
 </html>
 {% endlanguage %}

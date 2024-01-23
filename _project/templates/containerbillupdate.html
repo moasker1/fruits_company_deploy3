@@ -28,8 +28,8 @@
         <h2>فاتورة النقلة</h2><br>
         <div class="billinputs">
             <input type="number" name="count" placeholder="العدد" required value="{{ container_bill.count }}">
-            <input type="number" name="weight" step="0.01" placeholder="الوزن" required value="{{ container_bill.weight }}">
-            <input type="number" name="price" step="0.01" placeholder="السعر" required value="{{ container_bill.price }}" id="priceInputBill">
+            <input type="number" name="weight" step="0.001" placeholder="الوزن" required value="{{ container_bill.weight }}">
+            <input type="number" name="price" step="0.001" placeholder="السعر" required value="{{ container_bill.price }}" id="priceInputBill">
             <select name="container_item" id="kind-select" required>
                 <option value="">اختر الصنف</option>
                 {% for container_item in container_items %}

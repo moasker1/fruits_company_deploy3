@@ -18,79 +18,8 @@
             <img src="{% static "images/logo.png" %}" alt="">
             <h1>ترحيل النقلة</h1>
         </div>
-        <a href="{% url 'home' %}" ><i class="fa-solid fa-arrow-left"></i></a>
+        <a href="{% url 'addcontainer' %}" ><i class="fa-solid fa-arrow-left"></i></a>
     </header>
-        <!-- اضافة اصناف للنقلة -->
-    <div class="window" id="kinds">
-        <i id="closekinds" class="fa-solid fa-xmark close"></i>
-        <h2>اضافة اصناف للنقلة</h2>
-        <div class="inputs">
-            <input type="text" name="" id="" placeholder="اسم الصنف">
-            <input type="number" name="" id="" placeholder="العدد">
-            <select name="" id="">
-                <option value="">العدة</option>
-            </select>
-            <input type="number" name="" id="" placeholder="سعر البيع">
-            <button id="addcon">اضافة</button>
-            <button id="editcon">تعديل</button>
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>الصنف</th>
-                    <th>العدد</th>
-                    <th>العدة</th>
-                    <th>السعر</th>
-                    <th>التاريخ</th>
-                    <th></th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody id="tablebody">
-                <tr>
-                    <td>تفاح</td>
-                    <td>10</td>
-                    <td>صناديق</td>
-                    <td>15</td>
-                    <td></td>
-                    <td><button id="editkind" class="btn" style="color: #00F000;"><i class="fa-regular fa-pen-to-square"></i></button></td>
-                    <td><button id="deletecar" class="btn"  style="color: #FF0000;" ><i class="fa-solid fa-trash"></i></button></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <!-- تعديل بيانات النقلة -->
-    <div class="window" id="editcarcon">
-        <i id="closeeditcon" class="fa-solid fa-xmark close"></i>
-        <h2>تعديل النقلة</h2>
-        <div class="inputs">
-            <input type="text" name="" id="" placeholder="اسم النفلة">
-            <input type="date" name="" id="" placeholder="التاريخ">
-            <select name="" id="">
-                <option value="">عمولة</option>
-            </select>
-            <button>تعديل</button>
-        </div>
-    </div>
-    <!-- تعديل عملية البيع -->
-    <div class="window" id="editcarsell">
-        <i id="closesellcon" class="fa-solid fa-xmark close"></i>
-        <h2>تعديل عملية البيع</h2>
-        <div class="inputs">
-            <input type="number" placeholder="العدد">
-            <input type="number" placeholder="الوزن">
-            <input type="number" placeholder="السعر">
-            <input type="text" placeholder="اسم البائع">
-            <select name="kind" id="">
-                <option value="تفاح">تفاح</option>
-            </select>
-            <select name="" id="">
-                <option value="">صناديق صغيرة</option>
-                <option value="">صناديق كبيرة</option>
-            </select>
-            <button>تعديل</button>
-        </div>
-    </div>
     <div class="detailscon">
         <h2> اسم العميل: <span>{{container.supplier.name}}</span></h2>
         <h2>التاريخ : <span>{{container.date|date:"20y/m/d"|arabic_numbers}}</span></h2>
@@ -104,11 +33,15 @@
         <h2>العدد المتبقى : <span>{{container.total_remaining_count|arabic_numbers}}</span></h2>
         <h2>الوزن : <span>{{container.total_sale_weight|arabic_numbers}}</span></h2>
         <h2>اجمالى البيع : <span>{{container.total_sale_price|arabic_numbers}}</span></h2>
-        <h2> اجمالى النقلة : <span>{{container.total_con_price|arabic_numbers}}</span></h2>
+        <!-- <h2> اجمالى النقلة : <span>{{container.total_con_price|arabic_numbers}}</span></h2>
         <h2>فرق الوزن : <span>{{container.weight_difference|arabic_numbers}}</span></h2>
-        <h2>فرق الفاتورة : <span>{{container.price_difference|arabic_numbers}}</span></h2>
+        <h2>فرق الفاتورة : <span>{{container.price_difference|arabic_numbers}}</span></h2> -->
     </div>
-    
+    <div class="carKinds">
+        {% for item in container.containeritem_set.all %}
+        <span meta_data="{{item.remaining_count}}" class="carKind" id="carKind">{{item.item.name}} : {{item.remaining_count|arabic_numbers}}</span>
+        {% endfor %}
+    </div>
     <form method="POST" class="sellcon" action="{% url 'sellcon' container.id %}">
         {% csrf_token %}
         <ul class="messages">
@@ -116,23 +49,20 @@
                 <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
             {% endfor %}
         </ul>
-        <label for="container_item">اصناف النقلة :</label>
         <select name="container_item" id="container_item">
-            <option value="">أختر الصنف</option>
             {% for item in container.containeritem_set.all %}
                 <option value="{{ item.item.name }}" data-price="{{ item.price }}">{{ item.item.name }}</option>
-            {% endfor %}
-        </select>
+                {% endfor %}
+            </select>
             <input type="hidden" name="container_id" value="{{ container.id }}">
-            <label for="">الوزن :</label>
+            <input name="count" type="number" id="count" placeholder="العدد">
             <input name="weight" type="number" step="0.01" placeholder="الوزن">
-            <label for="">العدد :</label>
-            <input name="count" type="number" placeholder="العدد">
-            <label for="">السعر :</label>
             <input name="price" type="number" step="0.001" placeholder="السعر" id="priceInput">
-            <label for="">اسم البائع :</label>
             <nav class="wraper">
+            <div class="first">
                 <input name='seller' type="text" id="search_bar" placeholder="اسم البائع">
+                <i id="arrow-down" class="fa-solid fa-angles-down"></i>
+            </div>
                 <div class="search_res" id="search_res">
                     <table>
                         <th></th>
@@ -144,12 +74,9 @@
                     </table>
                 </div>
             </nav>
-                <!-- <option value="اختر البائع">أختر البائع</option>
-                {% for seller in sellers %}
-                    <option value="{{ seller.name }}">{{ seller.name }}</option>
-                {% endfor %} -->
             <select name="tool" id="">
-                <option value="صماديق كبيرة">صناديق كبيرة</option>
+                <option value="اخر">اخر</option>
+                <option value="صناديق كبيرة">صناديق كبيرة</option>
                 <option value="صناديق صغيرة">صناديق صغيرة</option>
             </select>
             <input name='date' type="date" placeholder="المنظقة">
@@ -166,9 +93,9 @@
                 <thead>
                     <tr>
                         <th>اسم البائع</th>
-                        <th>العدد</th>
-                        <th>الوزن</th>
-                        <th>السعر</th>
+                        <th id="totbtn">العدد</th>
+                        <th id="weightbtn" >الوزن</i></th>
+                        <th id="pricebtn">السعر</th>
                         <th>الاجمالى</th>
                         <th>العدة</th>
                         <th>الصنف</th>
@@ -180,8 +107,11 @@
                     {% for sale in sales  %}
                     <tr>
                         <td>{{sale.seller}}</td>
+                        <td style="display: none;">{{sale.count}}</td>
                         <td>{{sale.count|arabic_numbers}}</td>
+                        <td style="display: none;">{{sale.weight}}</td>
                         <td>{{sale.weight|arabic_numbers}}</td>
+                        <td style="display: none;">{{sale.price}}</td>
                         <td>{{sale.price|arabic_numbers}}</td>
                         <td>{{sale.total_sell_price|arabic_numbers}}</td>
                         <td>{{sale.tool|arabic_numbers}}</td>
@@ -197,11 +127,72 @@
     <!-- البحث عن عمليات البيع باستخدام اسم البائع -->
     <script src="{% static "js/select.js" %}"></script>
     <script>
-        let tablebody = document.getElementById('tablesellbody')
+        const tableBody = document.getElementById('tablesellbody');
+        const sortButton = document.getElementById('weightbtn'); 
+        const pricebtn = document.getElementById('pricebtn');
+        const totbtn = document.getElementById('totbtn'); 
         let searchbar = document.getElementById('searchbar')
+        let count = document.getElementById('count')
+        //when the page reloads the input count will focus autoomaticly
+        window.onload=()=>{
+            count.focus();
+        }
+        // Sort function for the third td
+        function sortByWeight(ascending) {
+        const rows = Array.from(tableBody.querySelectorAll('tr'));
+        // Clone rows to avoid DOM manipulation
+        const sortedRows = rows.slice();
+        sortedRows.sort((row1, row2) => {
+            const weight1 = parseFloat(row1.querySelectorAll('td')[3].textContent.trim());
+            const weight2 = parseFloat(row2.querySelectorAll('td')[3].textContent.trim());
+            return (weight1 - weight2) * (ascending ? 1 : -1);
+        });
+        // Clear and re-append sorted rows
+        tableBody.innerHTML = '';
+        sortedRows.forEach(row => tableBody.appendChild(row));
+        }
+        function sortByPrice(ascending) {
+        const rows = Array.from(tableBody.querySelectorAll('tr'));
+        // Clone rows to avoid DOM manipulation
+        const sortedRows = rows.slice();
+        sortedRows.sort((row1, row2) => {
+            const weight1 = parseFloat(row1.querySelectorAll('td')[5].textContent.trim());
+            const weight2 = parseFloat(row2.querySelectorAll('td')[5].textContent.trim());
+            return (weight1 - weight2) * (ascending ? 1 : -1);
+        });
+        // Clear and re-append sorted rows
+        tableBody.innerHTML = '';
+        sortedRows.forEach(row => tableBody.appendChild(row));
+        }
+        function sortByTotal(ascending) {
+        const rows = Array.from(tableBody.querySelectorAll('tr'));
+        // Clone rows to avoid DOM manipulation
+        const sortedRows = rows.slice();
+        sortedRows.sort((row1, row2) => {
+            const weight1 = parseFloat(row1.querySelectorAll('td')[1].textContent.trim());
+            const weight2 = parseFloat(row2.querySelectorAll('td')[1].textContent.trim());
+            return (weight1 - weight2) * (ascending ? 1 : -1);
+        });
+        // Clear and re-append sorted rows
+        tableBody.innerHTML = '';
+        sortedRows.forEach(row => tableBody.appendChild(row));
+        }
+        let isAscending = true;
+        sortButton.addEventListener('click', () => {
+        isAscending = !isAscending;
+        sortByWeight(isAscending);
+        });
+        pricebtn.addEventListener('click', () => {
+        isAscending = !isAscending;
+        sortByPrice(isAscending);
+        });
+        totbtn.addEventListener('click', () => {
+        isAscending = !isAscending;
+        sortByTotal(isAscending);
+        });
         searchbar.onkeyup=()=>{
             let filter = searchbar.value.toUpperCase();
-            let tr= tablebody.getElementsByTagName('tr');
+            let tr= tableBody.getElementsByTagName('tr');
                         for(var i=0; i<tr.length; i++){
                             let td = tr[i].getElementsByTagName('td')[0];
                             if(td){
@@ -215,14 +206,6 @@
                             }
                         }
         }
-
-    </script>
-    <script>
-        function goBack() {
-            window.history.back();
-        }
-    </script>
-    <script>
         // Ensure the script runs after the document is fully loaded
         window.addEventListener('load', function () {
             // Update the 'price' input field when the selected 'container_item' changes
@@ -232,6 +215,21 @@
                 priceInput.value = parseFloat(selectedOption.getAttribute('data-price')) || '';
             });
         });
+            function highlightCarKinds() {
+                const carKindElements = document.querySelectorAll('[id="carKind"]');
+                for (const carKindElement of carKindElements) {
+                    const metaData = carKindElement.getAttribute('meta_data');
+                    console.log(metaData)
+                    if (metaData === '0') {
+                    carKindElement.style.background = '#e60e0e';
+                    } else if (metaData !== null) { // Ensure metaData is present and not 0
+                    carKindElement.style.background = '#00C2F4';
+                    carKindElement.style.color = '#040404';
+                    }
+                }
+            }
+        // Call the function to apply the highlighting
+        highlightCarKinds();
     </script>
 </body>
 </html>

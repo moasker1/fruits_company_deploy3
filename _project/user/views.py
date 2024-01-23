@@ -1,12 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .models import Supplier, Seller, Container, Item, ContainerItem, Sale, Payment, Lose, ContainerExpense, ContainerBill
+from .models import Supplier, Seller, Container, Item, ContainerItem, Sale, Payment, Lose, ContainerExpense, ContainerBill, SupplierPay
 from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Sum
 from datetime import datetime
 from django.db.models import F
+import pytz
+
 
 #====================================================================================================================
 #====================================================================================================================
@@ -53,12 +55,12 @@ def add_container(request):
             # Try to get the Supplier instance based on the name
             supplier = Supplier.objects.get(name=supplier_name)
         except Supplier.DoesNotExist:
-            # Handle the case where the supplier does not exist
             messages.warning(request, f'العميل ({supplier_name}) غير موجود')
             return redirect('addcontainer')
 
         if not date_str:
-            date = timezone.now().date()
+            egypt_tz = pytz.timezone('Africa/Cairo')
+            date = timezone.now().astimezone(egypt_tz).date()
         else:
             try:
                 date = timezone.datetime.strptime(date_str, '%Y-%m-%d').date()
@@ -76,6 +78,7 @@ def add_container(request):
     context = {
         'containers':container,
         'supplys': Supplier.objects.all(),
+        
         }
     return render(request, 'add.html', context)
 #====================================================================================================================
@@ -93,18 +96,18 @@ def container_update(request, id):
         try:
             supplier = Supplier.objects.get(name=supplier)
         except Supplier.DoesNotExist:
-            # Handle the case where the supplier does not exist
             messages.warning(request, 'العميل غير موجود')
             return redirect('containerupdate',id=id)
 
         try:
-            if date_str:  # Check for date input
+            if date_str: 
                 date = timezone.datetime.strptime(date_str, '%Y-%m-%d').date()
             elif not supplier:
                 messages.error(request,"اسم العميل غير موجود")
                 return redirect('containerupdate', id=id)
             else:
-                date = timezone.now().date()  # Set to today's date if not provided
+                egypt_tz = pytz.timezone('Africa/Cairo')
+                date = timezone.now().astimezone(egypt_tz).date()
 
 
             edit = Container.objects.get(id=id)
@@ -144,6 +147,8 @@ def container_details(request, id):
     expenses = ContainerExpense.objects.filter(container=container)
     container_bills = ContainerBill.objects.filter(container=container)
     container_items = ContainerItem.objects.filter(container=container)
+    sales = Sale.objects.filter(container=container)
+
 
     # Fetching total based on container_bills data
     total_of_nakla = sum(bill.total_bill_row for bill in container_bills)
@@ -157,7 +162,8 @@ def container_details(request, id):
         'container_bills': container_bills,
         'container_items': container_items,
         'total_of_nakla': total_of_nakla,
-        'total_bill_price': total_bill_price,  # Add this to the context
+        'total_bill_price': total_bill_price,
+        'sales' : sales,
     }
 
     if request.method == "POST":
@@ -166,7 +172,6 @@ def container_details(request, id):
             carry = request.POST['carry']
             tool_rent = request.POST['tool_rent']
             
-            # Ensure that commission, carry, and tool_rent are not empty
             commission = 0 if not commission else commission
             carry = 0 if not carry else carry
             tool_rent = 0 if not tool_rent else tool_rent
@@ -205,7 +210,6 @@ def container_details(request, id):
             else:
                 container_item = get_object_or_404(ContainerItem, pk=container_item_id)
 
-                # Create a new ContainerBill instance
                 ContainerBill.objects.create(
                     container=container,
                     container_item=container_item,
@@ -225,13 +229,11 @@ def container_bill_update(request, id):
     container_items = ContainerItem.objects.all()  # You may need to filter this based on your requirements
 
     if request.method == 'POST':
-        # Handle the form submission for updating the ContainerBill
         count = request.POST.get('count')
         weight = request.POST.get('weight')
         price = request.POST.get('price')
         container_item_id = request.POST.get('container_item')
 
-        # Validate and update the ContainerBill instance
         if not (count and weight and price and container_item_id):
             pass
 
@@ -305,14 +307,13 @@ def container_items(request, id):
             if existing_item:
                 messages.warning(request, f"الصنف ({item_name}) موجود بالفعل في النقلة ")
             else:
-                # Create a new ContainerItem object with item_weight
                 ContainerItem.objects.create(
                     container=container,
                     item=item,
                     count=count,
                     tool=tool,
                     price=price,
-                    item_weight=weight  # Include item_weight in creation
+                    item_weight=weight  
                 )
                 messages.success(request, "تم إضافة الصنف بنجاح")
                 return redirect('containeritems', id)
@@ -328,7 +329,6 @@ def containeritem_delete(request, id):
         return redirect("containeritems", id=container_item_delete.container.id)
 
     if request.method == "POST":
-        # Check if the ContainerItem is still involved in any sale operation before deletion
         if Sale.objects.filter(container_item=container_item_delete).exists():
             messages.error(request, "هذا الصنف تم ادراجه في عملية بيع ,الحذف قد يسبب مشاكل تقنية")
         else:
@@ -339,9 +339,10 @@ def containeritem_delete(request, id):
 #====================================================================================================================
 @login_required(login_url="login")
 def today_containers(request):
-    todays_date = timezone.now().date()  # Get today's date
-    containers = Container.objects.filter(date=todays_date)  # Filter by today's date
-    context = {'container': containers}  # Pass the filtered queryset to the template
+    egypt_tz = pytz.timezone('Africa/Cairo')
+    todays_date = timezone.now().astimezone(egypt_tz).date() 
+    containers = Container.objects.filter(date=todays_date) 
+    context = {'container': containers} 
 
     return render(request, 'today.html', context)
 #====================================================================================================================
@@ -422,7 +423,8 @@ def sell_container(request, id):
             return redirect('sellcon', id=id)
 
         if not date_str:
-            date = timezone.now().date()
+            egypt_tz = pytz.timezone('Africa/Cairo')
+            date = timezone.now().astimezone(egypt_tz).date()
         else:
             try:
                 date = timezone.datetime.strptime(date_str, '%Y-%m-%d').date()
@@ -430,7 +432,6 @@ def sell_container(request, id):
                 messages.warning(request, 'تاريخ غير صالح. يجب أن يكون الشكل YYYY-MM-DD', extra_tags='warning')
                 return redirect('sellcon', pk=id)
 
-        # Add the container field when creating a new Sale
         Sale.objects.create(
             seller=seller,
             container=container,
@@ -529,22 +530,21 @@ def sell_container(request, id):
 #====================================================================================================================
 def sale_delete(request, id):
     sale_to_delete = get_object_or_404(Sale, id=id)
-    container_id = sale_to_delete.container.id  # Retrieve the associated container ID
+    container_id = sale_to_delete.container.id  
 
     if request.method == "POST":
         # Retrieve the associated ContainerItem
         container_item = sale_to_delete.container_item
 
-        # Increment the remaining_count by the count of the deleted sale
         if container_item:
             container_item.remaining_count = F('remaining_count') + sale_to_delete.count
             container_item.save()
 
         sale_to_delete.delete()
-        return redirect("sellcon", id=container_id)  # Redirect to the sellcon view with the correct container ID
+        return redirect("sellcon", id=container_id) 
 
     context = {
-        'sale': sale_to_delete,  # Pass only the specific Sale object to the template
+        'sale': sale_to_delete,  
     }
     return render(request, "saledelete.html", context)
 #====================================================================================================================
@@ -555,25 +555,27 @@ def sale_delete(request, id):
 @login_required(login_url="login")
 def loses(request):
     loses = Lose.objects.all()
-    context ={'loses':loses}
+    context = {'loses': loses}
+
     if request.method == 'POST':
         amount = request.POST.get('amount')
         lose_type = request.POST.get('lose_type')
         date = request.POST.get('date')
 
-        if int(amount) < 0 :
-            messages.error(request,"قيمة المصروف اصغر من صفر")
+        if int(amount) < 0:
+            messages.error(request, "قيمة المصروف أقل من صفر")
             return redirect('loses')
 
+        egypt_tz = pytz.timezone('Africa/Cairo')
         lose_instance = Lose(
             amount=amount,
             lose_type=lose_type,
-            date=date if date else timezone.now().date(),
-        )       
+            date=date if date else timezone.now().astimezone(egypt_tz).date(),
+        )
         lose_instance.save()
-        return redirect('loses') 
+        return redirect('loses')
 
-    return render(request, 'loses.html',context)
+    return render(request, 'loses.html', context)
 #====================================================================================================================
 def loses_delete(request, id):
     loses_delete = get_object_or_404(Lose, id=id )
@@ -584,14 +586,15 @@ def loses_delete(request, id):
 #====================================================================================================================
 @login_required(login_url="login")
 def profits(request):
-    payments= Payment.objects.all()
+    payments = Payment.objects.all()
     sel = Seller.objects.all()
-    context={
-        'payments':payments,
+    context = {
+        'payments': payments,
         'sels': sel,
     }
+
     if request.method == "POST":
-        seller_name = request.POST.get('seller')  
+        seller_name = request.POST.get('seller')
         paid_money = request.POST.get('paid')
         forgive = request.POST.get('forgive')
         date_str = request.POST.get('date')
@@ -613,21 +616,23 @@ def profits(request):
             messages.warning(request, 'برجاء إدخال المبلغ')
             return redirect("profits")
 
+        egypt_tz = pytz.timezone('Africa/Cairo')
+
         if not date_str:
-            date = timezone.now().date()
+            date = timezone.now().astimezone(egypt_tz).date()
         else:
             try:
                 date = timezone.datetime.strptime(date_str, '%Y-%m-%d').date()
             except ValueError:
                 messages.warning(request, 'تاريخ غير صالح. يجب أن يكون الشكل YYYY-MM-DD', extra_tags='warning')
                 return redirect("profits")
-            
+
         payment = Payment(
             seller=seller,
-            paid_money = paid_money,
+            paid_money=paid_money,
             forgive=forgive,
             date=date,
-        )    
+        )
         payment.save()
         payment.temp_rest = payment.rest
         payment.save()
@@ -638,13 +643,14 @@ def profits(request):
 #====================================================================================================================
 def profits_update(request, id):
     payment = Payment.objects.get(id=id)
+
     if request.method == "POST":
         paid_money = request.POST['paid_money']
         forgive = request.POST['forgive']
         date_str = request.POST['date']
 
         try:
-            if date_str:  
+            if date_str:
                 date = timezone.datetime.strptime(date_str, '%Y-%m-%d').date()
             elif not paid_money:
                 messages.error(request, "ادخل المبلغ")
@@ -652,9 +658,9 @@ def profits_update(request, id):
             elif not forgive:
                 messages.error(request, "اذا كانت قيمة السماح تساوي صفر , يرجى ادخال قيمة 0")
                 return redirect('profitsupdate', id=id)
-
             else:
-                date = timezone.now().date()  
+                egypt_tz = pytz.timezone('Africa/Cairo')
+                date = timezone.now().astimezone(egypt_tz).date()
 
             edit = Payment.objects.get(id=id)
             edit.paid_money = paid_money
@@ -663,7 +669,7 @@ def profits_update(request, id):
             edit.save()
             edit.temp_rest = edit.rest
             edit.save()
-            messages.success(request,"تم تعديل عملية البيع بنجاح")
+            messages.success(request, "تم تعديل عملية البيع بنجاح")
             return redirect("profits")
         except ValueError:
             messages.warning(request, 'تاريخ غير صالح. يجب أن يكون الشكل YYYY-MM-DD', extra_tags='warning')
@@ -685,24 +691,22 @@ def day_money(request):
         date_str = request.POST.get('date')
         selected_date = datetime.strptime(date_str, '%Y-%m-%d').date()
 
-        # Calculate total payments for the selected date
+        egypt_tz = pytz.timezone('Africa/Cairo')
+        selected_date = egypt_tz.localize(datetime.combine(selected_date, datetime.min.time())).date()
+
         total_payments = Payment.objects.filter(date__date=selected_date).aggregate(Sum('paid_money'))['paid_money__sum']
-        total_payments = total_payments or 0  # Set to zero if total_payments is None
+        total_payments = total_payments or 0  
 
-        # Calculate total loses for the selected date
         total_loses = Lose.objects.filter(date=selected_date).aggregate(Sum('amount'))['amount__sum']
-        total_loses = total_loses or 0  # Set to zero if total_loses is None
+        total_loses = total_loses or 0  
 
-        # Calculate remaining amount (total payments - total loses)
         remaining_amount = total_payments - total_loses
 
         return render(request, 'daymoney.html', {
             'total_payments': total_payments,
             'total_loses': total_loses,
             'remaining_amount': remaining_amount,
-            
         })
-        
 
     return render(request, 'daymoney.html', {'total_payments': None})
 #====================================================================================================================
@@ -714,20 +718,20 @@ def day_money(request):
 def add_items(request):
     if request.method == "POST":
         name = request.POST.get('name')
-        date = request.POST.get('date')
+        date_str = request.POST.get('date')
 
-        # Strip leading and trailing spaces from the name
         name = name.strip()
 
         if not name:
             messages.warning(request, 'يجب إدخال اسم الصنف')
             return redirect('items')
 
-        elif not date:
-            date = timezone.now().date()
+        elif not date_str:
+            egypt_tz = pytz.timezone('Africa/Cairo')
+            date = timezone.now().astimezone(egypt_tz).date()
         else:
             try:
-                date = timezone.datetime.strptime(date, '%Y-%m-%d').date()
+                date = timezone.datetime.strptime(date_str, '%Y-%m-%d').date()
             except ValueError:
                 messages.warning(request, 'تاريخ غير صالح. يجب أن يكون الشكل YYYY-MM-DD', extra_tags='warning')
                 return redirect('items')
@@ -752,18 +756,19 @@ def item_update(request, id):
 
     if request.method == "POST":
         name = request.POST.get('name')
-        date = request.POST.get('date')
+        date_str = request.POST.get('date')
 
         name = name.strip()
 
         try:
-            if date:
-                date = timezone.datetime.strptime(date, '%Y-%m-%d').date()
+            if date_str:
+                date = timezone.datetime.strptime(date_str, '%Y-%m-%d').date()
             elif not name:
                 messages.error(request, "اسم الصنف غير موجود")
                 return redirect('itemupdate', id=id)
             else:
-                date = timezone.now().date()
+                egypt_tz = pytz.timezone('Africa/Cairo')
+                date = timezone.now().astimezone(egypt_tz).date()
 
             edit = Item.objects.get(id=id)
             edit.name = name
@@ -778,7 +783,7 @@ def item_update(request, id):
             messages.error(request, 'حدث خطأ، الصنف غير موجود', extra_tags='error')
             return redirect("itemupdate", id=id)
 
-    else:  # Initial rendering
+    else: 
         try:
             item = Item.objects.get(id=id)
         except Item.DoesNotExist:
@@ -808,6 +813,7 @@ def seller_accounts(request):
         name = request.POST.get('name')
         place = request.POST.get('place', 'غير محدد')  
         date_str = request.POST.get('date')
+        seller_opening_balance = request.POST.get('seller_opening_balance')
 
         name = name.strip()
         place = place.strip()
@@ -818,13 +824,16 @@ def seller_accounts(request):
         if not place:
             messages.warning(request, 'برجاء إدخال اسم المنطقة')
             return redirect('selleraccounts')
+        if not seller_opening_balance:
+            seller_opening_balance = 0
 
         if Seller.objects.filter(name=name).exists():
             messages.warning(request, f'اسم البائع ({name}) موجود بالفعل في قاعدة البيانات')
             return redirect('selleraccounts')
 
         if not date_str:
-            date = timezone.now().date()
+            egypt_tz = pytz.timezone('Africa/Cairo')
+            date = timezone.now().astimezone(egypt_tz).date()
         else:
             try:
                 date = timezone.datetime.strptime(date_str, '%Y-%m-%d').date()
@@ -832,13 +841,13 @@ def seller_accounts(request):
                 messages.warning(request, 'تاريخ غير صالح. يجب أن يكون الشكل YYYY-MM-DD', extra_tags='warning')
                 return redirect('selleraccounts')
 
-        if Seller.objects.create(name=name, place=place, date=date):
+        if Seller.objects.create(name=name, place=place, date=date,seller_opening_balance=seller_opening_balance):
             messages.success(request, 'تم إضافة بائع جديد بنجاح', extra_tags='success')
             return redirect('selleraccounts')
         else:
             messages.warning(request, 'حدث خطأ، يرجى التأكد من أن جميع البيانات صحيحة', extra_tags='error')
 
-    return render(request, 'sellersaccounts.html',context)
+    return render(request, 'sellersaccounts.html', context)
 #====================================================================================================================
 @login_required(login_url="login")
 def seller_page(request, id):
@@ -853,7 +862,6 @@ def seller_page(request, id):
         'payments': payments,
         'sales': sales,
         'sales_by_date': sales_by_date, 
-
     }
 
     if request.method == "POST":
@@ -880,7 +888,8 @@ def seller_page(request, id):
             return redirect('sellerpage', id=id)
 
         if not date_str:
-            date = timezone.now().date()
+            egypt_tz = pytz.timezone('Africa/Cairo')
+            date = timezone.now().astimezone(egypt_tz).date()
         else:
             try:
                 date = timezone.datetime.strptime(date_str, '%Y-%m-%d').date()
@@ -894,7 +903,6 @@ def seller_page(request, id):
             forgive=forgive,
             date=date,
         )
-        # Save the payment instance
         payment.save()
 
         # Update temp_rest to the new value of rest after saving
@@ -912,25 +920,31 @@ def seller_update(request, id):
         name = request.POST['name']
         place = request.POST['place']
         date_str = request.POST['date']
+        seller_opening_balance = request.POST['seller_opening_balance']
 
         name = name.strip()
         place = place.strip()
 
         try:
-            if date_str:  # Check for date input
+            if date_str:  
                 date = timezone.datetime.strptime(date_str, '%Y-%m-%d').date()
             elif not name:
-                messages.error(request,"اسم البائع غير موجود")
+                messages.error(request, "اسم البائع غير موجود")
+                return redirect('sellerupdate', id=id)
+            elif not seller_opening_balance:
+                messages.error(request, "اذا كان الرصيد الافتتاحي يساوي صفر , يرجى ادخال صفر")
                 return redirect('sellerupdate', id=id)
             elif not place:
-                messages.error(request,"يرجى إدخال المنطقة")
+                messages.error(request, "يرجى إدخال المنطقة")
                 return redirect('sellerupdate', id=id)
             else:
-                date = timezone.now().date()  # Set to today's date if not provided
+                egypt_tz = pytz.timezone('Africa/Cairo')
+                date = timezone.now().astimezone(egypt_tz).date()
 
             edit = Seller.objects.get(id=id)
             edit.name = name
             edit.place = place
+            edit.seller_opening_balance = seller_opening_balance
             edit.date = date
             edit.save()
             messages.success(request, 'تم تعديل بيانات البائع بنجاح', extra_tags='success')
@@ -942,9 +956,9 @@ def seller_update(request, id):
             messages.error(request, 'حدث خطأ، العميل غير موجود', extra_tags='error')
             return redirect("selleraccounts")
 
-    else:  # Initial rendering
+    else: 
         try:
-            seller = Seller.objects.get(id=id)  # Retrieve object
+            seller = Seller.objects.get(id=id)  
         except Seller.DoesNotExist:
             messages.error(request, 'حدث خطأ، العميل غير موجود', extra_tags='error')
             return redirect("selleraccounts")
@@ -974,6 +988,8 @@ def suppliers_accounts(request):
         name = request.POST.get('name')
         place = request.POST.get('place', 'غير محدد')  
         date_str = request.POST.get('date')
+        opening_balance = request.POST.get('opening_balance')
+        
 
         name = name.strip()
         place = place.strip()
@@ -984,13 +1000,16 @@ def suppliers_accounts(request):
         if not place:
             messages.warning(request, 'برجاء إدخال اسم المنطقة')
             return redirect('suppliersaccounts')
+        if not opening_balance:
+            opening_balance = 0
 
         if Supplier.objects.filter(name=name).exists():
             messages.warning(request, f'اسم العميل ({name}) موجود بالفعل في قاعدة البيانات')
             return redirect('suppliersaccounts')
 
         if not date_str:
-            date = timezone.now().date()
+            egypt_tz = pytz.timezone('Africa/Cairo')
+            date = timezone.now().astimezone(egypt_tz).date()
         else:
             try:
                 date = timezone.datetime.strptime(date_str, '%Y-%m-%d').date()
@@ -998,7 +1017,7 @@ def suppliers_accounts(request):
                 messages.warning(request, 'تاريخ غير صالح. يجب أن يكون الشكل YYYY-MM-DD', extra_tags='warning')
                 return redirect('suppliersaccounts')
 
-        if Supplier.objects.create(name=name, place=place, date=date):
+        if Supplier.objects.create(name=name, place=place, date=date, opening_balance=opening_balance):
             messages.success(request, 'تم إضافة عميل جديد بنجاح', extra_tags='success')
             return redirect('suppliersaccounts')
         else:
@@ -1020,32 +1039,39 @@ def supplier_page(request, id):
     context = {'sup': sup, 'containers': containers}
     return render(request, 'supplierpage2.html', context)
 #====================================================================================================================
+@login_required(login_url="login")
 def supplier_update(request, id):
     sup = None  # Initialize sup
 
     if request.method == "POST":
         name = request.POST['name']
         place = request.POST['place']
+        opening_balance = request.POST['opening_balance']
         date_str = request.POST['date']
 
         name = name.strip()
         place = place.strip()
 
         try:
-            if date_str:  # Check for date input
+            if date_str: 
                 date = timezone.datetime.strptime(date_str, '%Y-%m-%d').date()
+            elif not opening_balance:
+                messages.error(request, "اذا كان الرصيد الافتتاحي يساوي صفر فيرجى ادخال صفر")
+                return redirect('supplierupdate', id=id)
             elif not name:
-                messages.error(request,"اسم العميل غير موجود")
+                messages.error(request, "اسم العميل غير موجود")
                 return redirect('supplierupdate', id=id)
             elif not place:
-                messages.error(request,"يرجى إدخال المنطقة")
+                messages.error(request, "يرجى إدخال المنطقة")
                 return redirect('supplierupdate', id=id)
             else:
-                date = timezone.now().date()  # Set to today's date if not provided
+                egypt_tz = pytz.timezone('Africa/Cairo')
+                date = timezone.now().astimezone(egypt_tz).date()
 
             edit = Supplier.objects.get(id=id)
             edit.name = name
             edit.place = place
+            edit.opening_balance = opening_balance
             edit.date = date
             edit.save()
             messages.success(request, 'تم تعديل بيانات العميل بنجاح', extra_tags='success')
@@ -1057,9 +1083,9 @@ def supplier_update(request, id):
             messages.error(request, 'حدث خطأ، العميل غير موجود', extra_tags='error')
             return redirect("suppliersaccounts")
 
-    else:  # Initial rendering
+    else: 
         try:
-            sup = Supplier.objects.get(id=id)  # Retrieve object
+            sup = Supplier.objects.get(id=id)
         except Supplier.DoesNotExist:
             messages.error(request, 'حدث خطأ، العميل غير موجود', extra_tags='error')
             return redirect("suppliersaccounts")
@@ -1073,4 +1099,54 @@ def supplier_delete(request,id):
         supplier_delete.delete()
         return redirect("suppliersaccounts")
     return render(request, 'suppliersdelete.html')
+#====================================================================================================================
+def supplier_profits(request):
+    sup = Supplier.objects.all()
+    pay = SupplierPay.objects.all()
+    context = {
+        'sup': sup,
+        'pay':pay,
+        }
+
+    if request.method == "POST":
+        supplier_name = request.POST.get('supplier')
+        pay = request.POST.get('pay')  
+        date_str = request.POST.get('date')
+    
+        supplier_name = supplier_name.strip()
+
+        if not supplier_name:
+            messages.warning(request, 'يجب إدخال اسم العميل')
+            return redirect('supplierprofits')
+        if not pay:
+            messages.warning(request, 'برجاء إدخال المبلغ')
+            return redirect('supplierprofits')
+        if not date_str:
+            egypt_tz = pytz.timezone('Africa/Cairo')
+            date = timezone.now().astimezone(egypt_tz).date()
+        else:
+            try:
+                date = timezone.datetime.strptime(date_str, '%Y-%m-%d').date()
+            except ValueError:
+                messages.warning(request, 'تاريخ غير صالح. يجب أن يكون الشكل YYYY-MM-DD', extra_tags='warning')
+                return redirect('supplierprofits')
+
+        try:
+            supplier = Supplier.objects.get(name=supplier_name)
+        except Supplier.DoesNotExist:
+            messages.warning(request, 'اسم العميل غير موجود')
+            return redirect('supplierprofits')
+
+        SupplierPay.objects.create(supplier=supplier, pay=pay, date=date)
+        messages.success(request, 'تم إضافة صرف نقدية بنجاح', extra_tags='success')
+        return redirect('supplierprofits')
+
+    return render(request, 'supplierprofits.html', context)
+#====================================================================================================================
+def supplier_profits_delete(request, id):
+    supplier_profits_delete = get_object_or_404(SupplierPay, id=id )
+    if request.method == "POST":
+        supplier_profits_delete.delete()
+        return redirect("suppliersaccounts")
+    return render(request, "supplierprofitsdelete.html")
 #====================================================================================================================

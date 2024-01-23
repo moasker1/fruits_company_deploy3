@@ -33,10 +33,9 @@
                         <th>التاريخ</th>
                         <th>نوع النقلة</th>
                         <th>عدد الاصناف</th>
-                        <th>العدد الاساسى</th>
+                        <th id="totbtn">العدد الاساسى</th>
                         <th>العدد المباع</th>
                         <th>العدد المتبقى</th>
-                        <th>فاتورة</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -48,10 +47,10 @@
                         <td>{{container.date|date:"20y/m/d"|arabic_numbers}}</td>
                         <td>{{container.type}}</td>
                         <td>{{container.num_of_items|arabic_numbers}}</td>
+                        <td style="display: none;">{{container.main_total_count}}</td>
                         <td>{{container.main_total_count|arabic_numbers}}</td>
                         <td>{{container.total_sold_count|arabic_numbers}}</td>
                         <td>{{container.total_remaining_count|arabic_numbers}}</td>
-                        <td>لا</td>
                         <td><a href="{% url "condetails" container.id %}" style="text-decoration: none;" id="details" class="type">تفاصيل</a></td>
                     </tr>
                     {% endfor %}
@@ -65,11 +64,26 @@
         detailsbtn.onclick=()=>{
         window.location.href='cardetails.html'
         }
-    </script>
-    <script>
-        function goBack() {
-            window.history.back();
+        const tableBody = document.getElementById('tablebody');
+        const totbtn = document.getElementById('totbtn'); 
+        function sortByPrice(ascending) {
+        const rows = Array.from(tableBody.querySelectorAll('tr'));
+        // Clone rows to avoid DOM manipulation
+        const sortedRows = rows.slice();
+        sortedRows.sort((row1, row2) => {
+            const weight1 = parseFloat(row1.querySelectorAll('td')[5].textContent.trim());
+            const weight2 = parseFloat(row2.querySelectorAll('td')[5].textContent.trim());
+            return (weight1 - weight2) * (ascending ? 1 : -1);
+        });
+        // Clear and re-append sorted rows
+        tableBody.innerHTML = '';
+        sortedRows.forEach(row => tableBody.appendChild(row));
         }
+        let isAscending = true;
+        totbtn.addEventListener('click', () => {
+        isAscending = !isAscending;
+        sortByPrice(isAscending);
+        });
     </script>
 
 </body>

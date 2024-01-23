@@ -30,7 +30,6 @@
                         <th>اسم البائع</th>
                         <th>التاريخ</th>
                         <th>عليه</th>
-                        <th>عددالعدة</th>
                         <th>المنطقة</th>
                     </tr>
                 </thead>
@@ -40,7 +39,6 @@
                         <td>{{seller.name}}</td>
                         <td>{{seller.date|date:"20y/m/d"|arabic_numbers}}</td>
                         <td>{{seller.on_him|arabic_numbers}}</td>
-                        <td>{{seller.on_him|arabic_numbers|arabic_numbers}}</td>
                         <td>{{seller.place}}</td>
                     </tr>
                     {% endfor %}
@@ -55,7 +53,7 @@
             let filter = searchbar.value.toUpperCase();
             let tr= tablebody.getElementsByTagName('tr');
                         for(var i=0; i<tr.length; i++){
-                            let td = tr[i].getElementsByTagName('td')[4];
+                            let td = tr[i].getElementsByTagName('td')[3];
                             if(td){
                                 let txtvalue = td.textContent;
                                 if(txtvalue.toLocaleUpperCase().indexOf(filter)>-1){

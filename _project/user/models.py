@@ -4,48 +4,48 @@ from django.db.models import Sum
 from decimal import Decimal
 
 # ===================================================================================================
+# Update the Supplier model
 class Supplier(models.Model):
     name = models.CharField(max_length=30)
     place = models.CharField(max_length=70, default='غير محدد')
     date = models.DateField(default=timezone.now().date())
     type = models.CharField(max_length=30, default='عمولة')
-    his_money = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    on_him_money = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    total = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    num_of_containers = models.PositiveIntegerField(default=0)
-    
+    opening_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
     @property
-    def total(self):
-        return self.his_money - self.on_him_money
-    
-    @property  
+    def balance(self):
+        total_sale_price = sum(container.total_sale_price for container in self.container_set.all())
+        total_pay = self.supplierpay_set.aggregate(total_pay=Sum('pay'))['total_pay'] or 0
+
+        return total_sale_price + self.opening_balance - total_pay
+
+    @property
     def num_of_containers(self):
         return self.container_set.count()
-    
-    @property
-    def his_money(self):
-        # Calculate the sum of total_con_price for all associated containers
-        return sum(container.total_con_price for container in self.container_set.all()) or Decimal(0)
-    
+
     def __str__(self):
-        return self.name
+        return f"{self.name}"
 # ===================================================================================================
 class Seller(models.Model):
     name = models.CharField(max_length=30)
     place = models.CharField(max_length=70, default='غير محدد')
     date = models.DateField(default=timezone.now().date())
+    seller_opening_balance = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
     total_money = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
     on_him = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
+
 
     @property
     def on_him(self):
         payments = Payment.objects.filter(seller=self)
         total_paid = sum((payment.paid_money + payment.forgive or 0) for payment in payments)
-        return self.total_money - total_paid
+        return self.total_money + self.seller_opening_balance - total_paid
+
     @property
     def total_money(self):
         return sum(sale.total_sell_price for sale in self.sale_set.all()) or 0
     
+
     def __str__(self):
         return self.name
 # ===================================================================================================
@@ -117,16 +117,22 @@ class Container(models.Model):
     @property
     def total_bill_price(self):
         return self.containerbill_set.aggregate(total_bill_price=Sum('total_bill_row'))['total_bill_price'] or 0
+    
     @property
     def total_bill_weight(self):
         return self.containerbill_set.aggregate(total_bill_weight=Sum('weight'))['total_bill_weight'] or 0
+    
+    @property
+    def total_con_expenses(self):
+        return self.containerexpense_set.aggregate(total_con_expenses=Sum('expense'))['total_con_expenses'] or 0
 
     
     # calculate the commission
     def save(self, *args, **kwargs):
         if self.commission is not None:
             commission_decimal = Decimal(self.commission)  # Convert to Decimal
-            self.commission = (commission_decimal / 100) * self.total_bill_price
+            self.commission = (commission_decimal / 100) * self.total_sale_price
+            # self.commission = (commission_decimal / 100) * self.total_bill_price
         super().save(*args, **kwargs)   
 
     def __str__(self):
@@ -171,16 +177,13 @@ class Sale(models.Model):
 
     def save(self, *args, **kwargs):
         try:
-            # Ensure that 'count' is a valid numeric type before performing the subtraction
             count = int(self.count)
 
-            # Update remaining_count in the associated ContainerItem
             container_item = self.container_item
             if container_item:
                 container_item.remaining_count = max(0, container_item.remaining_count - count)
                 container_item.save()
 
-            # Ensure that 'price' and 'weight' are valid numeric types before performing the multiplication
             price = float(self.price)
             weight = float(self.weight)
             self.total_sell_price = price * weight
@@ -254,15 +257,22 @@ class ContainerBill(models.Model):
 
     def save(self, *args, **kwargs):
         try:
-            # Convert price and weight to float before multiplication
             price = float(self.price)
             weight = float(self.weight)
 
             self.total_bill_row = price * weight
         except (ValueError, TypeError):
-            # Handle the case where price or weight cannot be converted to float
             self.total_bill_row = 0
 
         super().save(*args, **kwargs)
     def __str__(self):
         return f"ContainerBill {self.id} for Container {self.container.id}"
+# ===================================================================================================
+class SupplierPay(models.Model):
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
+    pay = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField(default=timezone.now().date())
+
+    def __str__(self):
+        return f"Payment to {self.supplier} - {self.date}"    
+

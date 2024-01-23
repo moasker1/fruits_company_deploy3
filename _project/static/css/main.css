@@ -50,12 +50,12 @@ body{
 header{
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: start;
     direction: rtl;
     flex-direction: row;
     width: 100%;
     /* z-index: 103; */
-    padding: 5px 15px;
+    padding: 10px 15px;
     /* background: linear-gradient(270deg,#726c30,#e8df77,#FEFBD8); */
     background:linear-gradient(270deg,#084413,#5A8030,#74C785) ;
 }
@@ -98,30 +98,21 @@ header img{width: 40px;}
     align-items: center;
     position: relative;
     width: 100%;
-    height: 70%;
-}
-.mainpage i{
-    position: absolute;
-    bottom: 10%;
-    right: 20%;
-    font-size: 60px;
-    color: #dedede;
-    z-index: 101;
-    animation: arrowbottom 3s linear infinite;
-}
-@keyframes arrowbottom {
-    50%{
-        bottom: 5%;
-    }
+    height: 100%;
 }
 .mainpage img{
     position: absolute;
     left: 30%;
-    bottom:0;
+    top:5%;
     width: 40%;
     z-index: 100;
     transition: 0.5s ease;
     animation: arrow 3s ease-in-out infinite;
+}
+@keyframes arrow {
+    50%{
+        top: 10%;
+    }
 }
 .mainpage h1{
     color: #dedede;
@@ -142,9 +133,9 @@ header img{width: 40px;}
     /* background: linear-gradient(270deg,#726c30,#e8df77,#FEFBD8); */
 }
 .div1,.div2,.div3,.div4,.div5{
-    margin: 20px;
+    margin: 5px 10px;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     flex-wrap: nowrap;
     justify-content: center;
     align-items: center;
@@ -157,6 +148,14 @@ header img{width: 40px;}
     overflow: hidden;
     background-color: #dedede71;
     transition: 0.5s ease;
+}
+.div1 h2,.div2 h2,.div3 h2,.div4 h2,.div5 h2{
+    width: 100%;
+    background: #084413;
+    color: #dedede;
+    padding: 5px 0px;
+    border-bottom: 1px solid #040404;
+    text-align: center;
 }
 .div1:hover,.div2:hover,.div3:hover,.div4:hover,.div5:hover{
     transform: scale(1.1);
@@ -189,7 +188,7 @@ header img{width: 40px;}
     transition: 0.5s ease-in-out;
     padding: 10px 0px;
 }
-.buttons ul li a{
+.buttons a{
     text-decoration: none;
     color: #040404;
     width: 100%;
@@ -198,18 +197,15 @@ header img{width: 40px;}
 
 }
 .buttons ul li:hover{
-    background-color: #e8df77;
+    /* background-color: #e8df77; */
+    background-color: #4CAF50;
 }
 .secpage img{
     width: 50%;
     height: 100%;
     border-radius:0px 50% 0px 0px ;
 }
-@keyframes arrow {
-    50%{
-        bottom: 5%;
-    }
-}
+
 /* اضافة اصناف للنقله */
 .window{
     position: absolute;
@@ -351,7 +347,8 @@ header img{width: 40px;}
     color: #dedede;
     z-index: 100;
 }
-.table{
+.table,.tables{
+    position: relative;
     margin: -10px;
     width: 80%;
     display: flex;
@@ -364,7 +361,19 @@ header img{width: 40px;}
     border-radius: 10px;
     box-shadow: 1px 1px 10px #625D5D;
 }
-.table input{
+
+.table .title{
+    width: 60%;
+    position: absolute;
+    top: 0;
+    text-align: center;
+    background: linear-gradient(270deg,#5A8030,#74C785);
+    padding: 5px;
+    border-radius: 10px;
+    color: #dedede;
+    z-index: 100;
+}
+.table input,.tables input{
     width: 50%;
     text-align: center;
     font-size: 25px;
@@ -374,27 +383,27 @@ header img{width: 40px;}
     border: 2px solid #625D5D;
     margin-bottom: 30px;
 }
-.table table{
+.table table,.tables table{
     width: 100%;
     text-align: center;
 }
-.table table th{
+.table table th,.tables table th{
     font-size: 20px;
     padding: 5px;
     border-bottom: 1px solid #625D5D;
 }
-.table table td{
+.table table td,.tables table td{
     font-size: 20px;
     border-bottom: 1px solid #625D5D;
     padding: 10px;
     color: #625D5D;
 }
-.table table td .btn{
+.table table td .btn,.tables table td .btn{
     border: none;
     background-color: transparent;
     font-size: 20px;
 }
-.table table td .type{
+.table table td .type,.tables table td .type{
     background-color: rgb(72, 72, 255);
     border: none;
     padding: 10px;
@@ -404,7 +413,7 @@ header img{width: 40px;}
     cursor: pointer;
     transition: 0.5s ease-in;
 }
-.table table td .type:hover{
+.table table td .type:hover,.tables table td .type:hover{
     background-color:rgb(72, 72, 255) ;
 }
 /* صفحة النقلات المتبقية والنقلات المنتهية */
@@ -414,15 +423,15 @@ header img{width: 40px;}
     border-radius: 10px;
     overflow: hidden;
 }
-/* #check{
-    width: 90%;
-    color: #00C2F4;
-    font-size: 25px;
-    margin: 0;
-    padding: 0;
-} */
 .todayscar .table table thead,.window table thead,.bigcon table thead{
     background: linear-gradient(270deg,#5A8030,#74C785);
+}
+#weightbtn,#pricebtn,#totbtn{
+    cursor: pointer;
+    transition: 0.5s ease-in;
+}
+#weightbtn:hover,#pricebtn:hover,#totbtn:hover{
+    background: #084413;
 }
 .todayscar .table table th,.window table th{
     font-size: 20px;
@@ -506,7 +515,7 @@ header img{width: 40px;}
     outline: none;
     border: 1px solid #625D5D;
     border-radius: 10px;
-    padding:10px 10px;
+    padding:10px;
 }
 .sellcon input[type=text],[type=date],.sellcon select{
     width: 15%;
@@ -549,7 +558,7 @@ header img{width: 40px;}
     width: 100%;
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: start;
     padding: 10px;
     direction: rtl;
     overflow-x: hidden;
@@ -620,6 +629,50 @@ header img{width: 40px;}
     flex-direction: column;
     gap: 30px;
 }
+.bigcon .left .carinputs{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.carinputs .windows{
+    width: 40%;
+    height: fit-content;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 5px 10px;
+    box-shadow: 1px 1px 10px #625D5D;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    direction: rtl;
+}
+.carinputs .windows h2{
+    margin: 10px;
+    font-size:20px;
+}
+.carinputs .inputs{
+    margin: 5px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.carinputs .inputs input,.carinputs .inputs select{
+    width: 20%;
+    padding: 5px;
+    font-size: 15px;
+    border-radius:10px;
+    outline: none;
+    border: 1px solid #625D5D;
+}
 .paied{
     background: linear-gradient(180deg,#5A8030,#74C785);
 }
@@ -664,7 +717,7 @@ header img{width: 40px;}
     box-shadow: 1px 1px 10px #625D5D;
 }
 /* print container */
-#printcontent{
+#printcontent,#printallcontent,#printseccontent{
     top: 10%;
     display: flex;
     align-items: center;
@@ -727,7 +780,7 @@ header img{width: 40px;}
     overflow-x: hidden;
     border: 1px solid #625D5D;
 }
-.wraper #search_bar,.sellcon .wraper #search_bar{
+.wraper #search_bar{
     background-color: transparent;
     width: 100%;
     padding: 5px 20px;
@@ -736,6 +789,22 @@ header img{width: 40px;}
     border-radius: 10px;
     outline: none;
     border: none;
+}
+.sellcon .wraper #search_bar{
+    background-color: transparent;
+    width: 70%;
+    padding: 10px 10px;
+    text-align: center;
+    font-size: 20px;
+    border-radius: 10px;
+    outline: none;
+    border: none;
+}
+.wraper i,.sellcon .wraper i{
+    color: #084413;
+    width: 30px;
+    font-size: 25px;
+    cursor: pointer;
 }
 .wraper table,.sellcon .wraper table{
     width: 100%;
@@ -772,7 +841,7 @@ header img{width: 40px;}
 }
 .billinputs input[type='number'],.billinputs #kind-select{
     width: 15%;
-    padding: 10px;
+    padding: 5px;
     font-size: 20px;
     border-radius:10px;
     outline: none;
@@ -780,10 +849,43 @@ header img{width: 40px;}
 }
 .billinputs #kind-select{
     width: 20%;
-    padding: 10px;
+    padding: 5px;
     font-size: 20px;
     border-radius:10px;
     border: 1px solid #625D5D;
+}
+.bills_container{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: row;
+    width: 100%;
+}
+.bills_container .table,.bills_container .todayscar{
+    width: 50%;
+    height: 50vh;
+    margin: 0;
+    padding: 0;
+}
+.bills_container .table{
+    background-color: #fff;
+    box-shadow: none;
+    padding: 0;
+    position: relative;
+}
+.bills_container .table .tables{
+    width: 80%;
+}
+.bills_container .table .title{
+    width: 60%;
+    position: absolute;
+    top: 0px;
+    text-align: center;
+    background: linear-gradient(270deg,#5A8030,#74C785);
+    padding: 5px;
+    border-radius: 10px;
+    color: #dedede;
+    z-index: 100;
 }
 .messages {
     list-style-type: none;
@@ -951,7 +1053,7 @@ header img{width: 40px;}
     .mainpage img{
         position: absolute;
         left: 0;
-        top:25%;
+        top:5%;
         width: 100%;
         z-index: 100;
         transition: 0.5s ease;
@@ -959,7 +1061,7 @@ header img{width: 40px;}
     }
     @keyframes arrow {
         50%{
-            top: 15%;
+            top: 10%;
         }
     }
     .mainsec h1{
@@ -975,6 +1077,7 @@ header img{width: 40px;}
         width: 50%;
     }
     .div1,.div2,.div3,.div4,.div5{
+        width: 80%;
         height: 250px;
     }
     .buttons ul li{
@@ -1039,6 +1142,10 @@ header img{width: 40px;}
         border-radius:10px;
         outline: none;
         border: 1px solid #625D5D;
+    }
+    .carinputs .windows{
+        width: 80%;
+        height: fit-content;
     }
     .sellcon{flex-direction: column;}
     .sellcon input[type=number],.sellcon input[type=text],.sellcon select{width: 50%;}

@@ -45,5 +45,7 @@ urlpatterns = [
     path('suppliersort',views.supplier_sort, name='suppliersort' ),
     path('suppliersdelete/<int:id>',views.supplier_delete, name='suppliersdelete' ),
     path('supplierupdate/<int:id>',views.supplier_update, name='supplierupdate' ),
+    path('supplierprofits',views.supplier_profits, name='supplierprofits' ),
+    path('supplierprofitsdelete/<int:id>',views.supplier_profits_delete, name='supplierprofitsdelete' ),
 ]
     

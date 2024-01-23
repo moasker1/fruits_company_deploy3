@@ -42,8 +42,9 @@
 
             <div>
                 <input name="name" type="text" placeholder="اسم البائع">
-                <input name="place" type="text" placeholder="المنطقة">
-                <input name="date" type="date" placeholder="التاريخ">
+                <input name="place" type="text" placeholder="المنطقة" style="width: 15%;">
+                <input name="seller_opening_balance" step="0.001" type="number" placeholder="رصيد افتتاحى" style="width: 15%;">
+                <input name="date" type="date" placeholder="التاريخ" style="width: 20%;">
             </div>
             <button class="addbtn">اضف بائع</button>
         </form>
@@ -57,7 +58,7 @@
                     <tr>
                         <th>اسم البائع</th>
                         <th>التاريخ</th>
-                        <th>عليه</th>
+                        <th id="totbtn">عليه</th>
                         <th>المنطقة</th>
                         <th></th>
                         <th></th>
@@ -66,10 +67,10 @@
                 </thead>
                 <tbody id="tablebody">
                     {% for seller in seller  %}
-
                     <tr>
                         <td>{{seller.name}}</td>
                         <td>{{seller.date|date:"20y/m/d"|arabic_numbers}}</td>
+                        <td style="display: none;">{{seller.on_him}}</td>
                         <td>{{seller.on_him|arabic_numbers}}</td>
                         <td>{{seller.place}}</td>
                         <td><a href="{% url "sellerpage" seller.id %}" style="text-decoration: none;" class="type" id="show">عرض</a></td>
@@ -100,11 +101,26 @@
                             }
                         }
         }
-    </script>
-    <script>
-        function goBack() {
-            window.history.back();
+        const tableBody = document.getElementById('tablebody');
+        const totbtn = document.getElementById('totbtn'); 
+        function sortByPrice(ascending) {
+        const rows = Array.from(tableBody.querySelectorAll('tr'));
+        // Clone rows to avoid DOM manipulation
+        const sortedRows = rows.slice();
+        sortedRows.sort((row1, row2) => {
+            const weight1 = parseFloat(row1.querySelectorAll('td')[2].textContent.trim());
+            const weight2 = parseFloat(row2.querySelectorAll('td')[2].textContent.trim());
+            return (weight1 - weight2) * (ascending ? 1 : -1);
+        });
+        // Clear and re-append sorted rows
+        tableBody.innerHTML = '';
+        sortedRows.forEach(row => tableBody.appendChild(row));
         }
+        let isAscending = true;
+        totbtn.addEventListener('click', () => {
+        isAscending = !isAscending;
+        sortByPrice(isAscending);
+        });
     </script>
 
 </body>
