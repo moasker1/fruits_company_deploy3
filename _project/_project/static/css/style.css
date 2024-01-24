@@ -14,6 +14,12 @@
     background:linear-gradient(270deg,#084413,#5A8030,#74C785) ;
     /* background: linear-gradient(90deg,#726c30,#e8df77,#FEFBD8); */
 }
+#tigerLogo{
+    position: absolute;
+    top: 1%;
+    left: 1%;
+    width: 80px;
+}
 .txt{
     position: absolute;
     top: 10%;

@@ -20,8 +20,6 @@
         <a href="{% url 'home' %}"><i class="fa-solid fa-arrow-left"></i></a>
     </header>
     <!-- صفحة اضافة نقلات جديدة -->
-    
-    
     <div class="addnewcar">
         <form method="POST" class="addcar" action="{% url "addcontainer" %}">
             {% csrf_token %}
@@ -92,8 +90,8 @@
                         <td style="display: none;">{{container.total_sale_price}}</td>
                         <td>{{container.total_sale_price|arabic_numbers}}</td>
                         <td>{{container.total_con_price|arabic_numbers}}</td>
-                        <td><a href="{% url "containeritems" container.id %}" style="text-decoration: none;" class="type" id="addkind">اصناف النقلة</a></td>
-                        <td><a href="{% url "sellcon" container.id %} " style="text-decoration: none;" class="type" id="sellbtn">ترحيل</a></td>
+                        <td><a href="{% url "containeritems" container.id %}"  class="type" id="addkind">اصناف النقلة</a></td>
+                        <td><a href="{% url "sellcon" container.id %} "  class="type" id="sellbtn">ترحيل</a></td>
                         <td><a href="{% url "condetails" container.id %} " style="text-decoration: none;" class="dettype"  id="sellbtn">التفاصيل</a></td>
                         <td><a href="{% url "containerupdate" container.id %}" id="editcar" class="btn" style="color: #00F000;"><i class="fa-regular fa-pen-to-square"></i></a></td>
                         <td><a href="{% url "containerdelete" container.id %}" id="deletecar" class="btn"  style="color: #FF0000;" ><i class="fa-solid fa-trash"></i></a></td>
@@ -105,7 +103,6 @@
     </div>
     <script src="{% static "js/search.js" %}"></script>
     <script src="{% static "js/select.js" %}"></script>
-    </script>
     <script>
         const tableBody = document.getElementById('tablebody');
         const sortButton = document.getElementById('weightbtn'); 

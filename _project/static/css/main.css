@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Jomhuria&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Concert+One&display=swap');
 *{
     padding: 0;
     margin: 0;
@@ -15,7 +16,7 @@ body{
     background: #FEFBD8;
 }
 .circle{
-    position: absolute;
+    position: fixed;
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -58,6 +59,45 @@ header{
     padding: 10px 15px;
     /* background: linear-gradient(270deg,#726c30,#e8df77,#FEFBD8); */
     background:linear-gradient(270deg,#084413,#5A8030,#74C785) ;
+}
+footer{
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    align-items: center;
+    direction: rtl;
+    flex-direction: row;
+    width: 100%;
+    padding: 10px 15px;
+    background:#140b1c ;
+}
+footer img{
+    width: 30px;
+}
+footer h2{
+    color: #dedede;
+    direction: ltr;
+    font-family: 'Concert One', sans-serif;
+    font-weight: 400;
+}
+footer .link{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    direction: ltr;
+    position: absolute;
+    right: 10px;
+}
+footer .link a{
+    text-decoration: none;
+    color: #dedede;
+    font-family: 'Concert One', sans-serif;
+    transition: all .3s ease-in-out;
+    font-size: 20px;
+    padding-left:5px ;
+}
+footer .link a:hover{
+    color: blueviolet;
 }
 header a{
     text-decoration: none;
@@ -150,15 +190,29 @@ header img{width: 40px;}
     transition: 0.5s ease;
 }
 .div1 h2,.div2 h2,.div3 h2,.div4 h2,.div5 h2{
+    position: relative;
     width: 100%;
+    height: 50px;
+    display: flex;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
     background: #084413;
     color: #dedede;
-    padding: 5px 0px;
+    padding:0px;
     border-bottom: 1px solid #040404;
     text-align: center;
 }
 .div1:hover,.div2:hover,.div3:hover,.div4:hover,.div5:hover{
     transform: scale(1.1);
+}
+.div1 h2 i,.div2 h2 i,.div3 h2 i,.div4 h2 i,.div5 h2 i{
+    position: absolute;
+    color: #084413;
+    right: 0%;
+    border-radius: 15px 0 0 15px;
+    padding:10px 30px;
+    background-color: #dedede;
 }
 .buttons{
     direction: rtl;
@@ -182,16 +236,22 @@ header img{width: 40px;}
 .buttons ul li{
     margin: 10px 0px;
     width: 80%;
-    box-shadow: 1px 1px 10px #625D5D;
+    box-shadow: 1px 1px 5px #625D5D;
     border-radius: 10px;
     background-color: #dedede6e;
     transition: 0.5s ease-in-out;
     padding: 10px 0px;
+    position: relative;
+}
+.buttons ul li i{
+    position: absolute;
+    left: 10px;
 }
 .buttons a{
+    text-align: center;
     text-decoration: none;
     color: #040404;
-    width: 100%;
+    width: 98%;
     font-size: 20px;
     font-weight: 600;
 
@@ -405,13 +465,27 @@ header img{width: 40px;}
 }
 .table table td .type,.tables table td .type{
     background-color: rgb(72, 72, 255);
+    text-decoration: none;
     border: none;
     padding: 10px;
-    font-size: 20px;
+    font-size: 15px;
     color: #fff;
     border-radius: 5px;
     cursor: pointer;
     transition: 0.5s ease-in;
+}
+.table table td .dettype,.tables table td .dettype{
+    background-color: #e60e0e;
+    border: none;
+    padding: 10px;
+    font-size: 15px;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.5s ease-in;
+}
+.table table td .dettype:hover,.tables table td .dettype:hover{
+    background-color:rgb(153, 29, 13) ;
 }
 .table table td .type:hover,.tables table td .type:hover{
     background-color:rgb(72, 72, 255) ;
@@ -454,7 +528,8 @@ header img{width: 40px;}
 .table table td .type,.sellingbtn{
     border: none;
     padding: 10px;
-    font-size: 20px;
+    font-size: 15px;
+    word-break:keep-all;
     color: #fff;
     border-radius: 5px;
     cursor: pointer;
@@ -492,6 +567,31 @@ header img{width: 40px;}
     color: #625D5D;
     font-size: 20px;
 }
+.carKinds{
+    margin: 20px;
+    width: 80%;
+    min-height: 50px;
+    border-radius: 10px;
+    direction: rtl;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-around;
+}
+.carKinds .carKind{
+    background: linear-gradient(270deg,#084413,#4CAF50);
+    width: 15%;
+    margin: 10px;
+    padding: 10px 0 ;
+    text-align: center;
+    font-size: 20px;
+    color: #dedede;
+    font-weight: 600;
+    border-radius: 20px;
+    box-shadow: 1px 1px 10px #625D5D;
+
+}
 .sellcon{
     margin: 20px;
     width: 80%;
@@ -528,6 +628,7 @@ header img{width: 40px;}
 .sellcon button ,.billinputs button{
     border: none;
     font-size: 20px;
+    text-align: center;
     color: #fff;
     width: 20%;
     padding: 5px 15px;
@@ -541,7 +642,7 @@ header img{width: 40px;}
     opacity: 0.8;
 }
 .cardetails{
-    background-color: #00C2F4;
+    background-color: #e60e0e;
     border: none;
     border-radius:10px;
     padding: 5px 15px;
@@ -552,7 +653,7 @@ header img{width: 40px;}
     transition: 0.5s ease-in;
 }
 .cardetails:hover{
-    background-color:rgb(72, 72, 255) ;
+    background-color:rgb(153, 29, 13) ;
 }
 .bigcon{
     width: 100%;
@@ -844,6 +945,7 @@ header img{width: 40px;}
     padding: 5px;
     font-size: 20px;
     border-radius:10px;
+    text-align: center;
     outline: none;
     border: 1px solid #625D5D;
 }
@@ -852,6 +954,7 @@ header img{width: 40px;}
     padding: 5px;
     font-size: 20px;
     border-radius:10px;
+    text-align: center;
     border: 1px solid #625D5D;
 }
 .bills_container{
@@ -1064,6 +1167,9 @@ header img{width: 40px;}
             top: 10%;
         }
     }
+    .table table td .dettype,.tables table td .dettype{
+    display: none;
+    }
     .mainsec h1{
         margin-top: 60px;
     }
@@ -1081,9 +1187,22 @@ header img{width: 40px;}
         height: 250px;
     }
     .buttons ul li{
-        margin: 10px;
+        margin: 5px;
     }
-    .buttons ul li a{
+    .buttons ul li i{
+        position:static;
+    }
+    .div1 h2,.div2 h2,.div3 h2,.div4 h2,.div5 h2{
+        width: 100%;
+        height: 40px;
+        font-size: 20px;
+        background: #084413;
+        overflow: hidden;
+        color: #dedede;
+        border-bottom: 1px solid #040404;
+        text-align: center;
+    }
+    .buttons a{
         font-size: 15px;
         font-weight: 500;
     }
@@ -1098,9 +1217,26 @@ header img{width: 40px;}
     }
     .title h1{font-size: 20px;}
     .table{width: 95%;}
+    .window,.todayscar .table,.table{overflow-x:auto;align-items: center;}
     .window table{width: 100%;transform: scale(0.5);}
     .todayscar .table table{width: 100%;transform: scale(0.5);}
     .table table{width: 100%;transform: scale(0.5);}
+    .tables table{width: 100%;transform: scale(0.5);}
+    .bills_container{
+        flex-direction: column;
+    }
+    .bills_container .table,.bills_container .todayscar{
+        width: 100%;
+        margin: 5px;
+    }
+    .bills_container .todayscar .billinputs{width: 100%; height: fit-content;justify-content: center;flex-direction: column; align-items: center; }
+    .bills_container .todayscar .billinputs input,.bills_container .todayscar .billinputs #kind-select,.bills_container .todayscar .billinputs button{
+        width: 50%;
+        margin: 5px;
+        font-size: 20px;
+        text-align: center;
+    }
+
     .table input{
         width: 80%;
         text-align: center;
@@ -1146,6 +1282,13 @@ header img{width: 40px;}
     .carinputs .windows{
         width: 80%;
         height: fit-content;
+    }
+    .carKinds .carKind{
+        width: 40%;
+        margin: 10px;
+        padding: 10px 0 ;
+        text-align: center;
+        font-size: 15px;
     }
     .sellcon{flex-direction: column;}
     .sellcon input[type=number],.sellcon input[type=text],.sellcon select{width: 50%;}

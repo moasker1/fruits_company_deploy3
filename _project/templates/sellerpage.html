@@ -150,7 +150,7 @@
                         <td><input type="checkbox" id="check"></td>
                         <td></td>
                         <td>{{ sale.date|date:"l" }}</td>
-                        <td style="display: none;">{{ sale.date|date:"d/m/y"}}</td>
+                        <td style="display: none;">{{ sale.date|date:"20y/m/d"}}</td>
                         <td>{{ sale.date|date:"20y/m/d"|arabic_numbers }}</td>
                         <td>{{ sale.container_item.item.name }}</td>
                         <td>{{ sale.weight|arabic_numbers }}</td>
@@ -166,7 +166,7 @@
                             <td><input type="checkbox" id="check"></td>
                             <td></td>
                             <td>{{ date_group.date|date:"l" }}</td>
-                            <td style="display: none;">{{ date_group.date|date:"d/m/y"}}</td>
+                            <td style="display: none;">{{ date_group.date|date:"20y/m/d"}}</td>
                             <td>{{ date_group.date|date:"20y/m/d"|arabic_numbers }}</td>
                             <td colspan="4">اجمالى وجبة</td>
                             <td>{{ date_group.total_meal|arabic_numbers }}</td>
@@ -179,7 +179,7 @@
                         <td><input type="checkbox" id="check"></td>
                         <td><a href="{% url "profitsupdate" payment.id %}" id="editcar" class="btn" style="color: #00F000;"><i class="fa-regular fa-pen-to-square"></i></a></td>
                         <td>{{ payment.date|date:"l" }}</td>
-                        <td style="display: none;">{{ payment.date|date:"d/m/y"}}</td>
+                        <td style="display: none;">{{ payment.date|date:"20y/m/d"}}</td>
                         <td>{{ payment.date|date:"20y/m/d"|arabic_numbers }}</td>
                         <td colspan="4">تم دفع</td>
                         <td>{{ payment.paid_money|arabic_numbers }}</td>
@@ -189,7 +189,7 @@
                         <td><input type="checkbox" id="check"></td>
                         <td></td>
                         <td>{{ payment.date|date:"l" }}</td>
-                        <td style="display: none;">{{ payment.date|date:"d/m/y"}}</td>
+                        <td style="display: none;">{{ payment.date|date:"20y/m/d"}}</td>
                         <td>{{ payment.date|date:"20y/m/d"|arabic_numbers }}</td>
                         <td colspan="4">السماح </td>
                         <td>{{ payment.forgive|arabic_numbers }}</td>

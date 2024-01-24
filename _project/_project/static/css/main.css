@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Jomhuria&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Concert+One&display=swap');
 *{
     padding: 0;
     margin: 0;
@@ -15,7 +16,7 @@ body{
     background: #FEFBD8;
 }
 .circle{
-    position: absolute;
+    position: fixed;
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -58,6 +59,45 @@ header{
     padding: 10px 15px;
     /* background: linear-gradient(270deg,#726c30,#e8df77,#FEFBD8); */
     background:linear-gradient(270deg,#084413,#5A8030,#74C785) ;
+}
+footer{
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    align-items: center;
+    direction: rtl;
+    flex-direction: row;
+    width: 100%;
+    padding: 10px 15px;
+    background:#140b1c ;
+}
+footer img{
+    width: 30px;
+}
+footer h2{
+    color: #dedede;
+    direction: ltr;
+    font-family: 'Concert One', sans-serif;
+    font-weight: 400;
+}
+footer .link{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    direction: ltr;
+    position: absolute;
+    right: 10px;
+}
+footer .link a{
+    text-decoration: none;
+    color: #dedede;
+    font-family: 'Concert One', sans-serif;
+    transition: all .3s ease-in-out;
+    font-size: 20px;
+    padding-left:5px ;
+}
+footer .link a:hover{
+    color: blueviolet;
 }
 header a{
     text-decoration: none;
@@ -425,9 +465,10 @@ header img{width: 40px;}
 }
 .table table td .type,.tables table td .type{
     background-color: rgb(72, 72, 255);
+    text-decoration: none;
     border: none;
     padding: 10px;
-    font-size: 20px;
+    font-size: 15px;
     color: #fff;
     border-radius: 5px;
     cursor: pointer;
@@ -437,7 +478,7 @@ header img{width: 40px;}
     background-color: #e60e0e;
     border: none;
     padding: 10px;
-    font-size: 20px;
+    font-size: 15px;
     color: #fff;
     border-radius: 5px;
     cursor: pointer;
@@ -487,7 +528,8 @@ header img{width: 40px;}
 .table table td .type,.sellingbtn{
     border: none;
     padding: 10px;
-    font-size: 20px;
+    font-size: 15px;
+    word-break:keep-all;
     color: #fff;
     border-radius: 5px;
     cursor: pointer;
