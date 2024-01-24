@@ -2,8 +2,8 @@ from django.contrib import admin
 from .models import Supplier, Seller, Container, Item, ContainerItem, Sale,Payment, Lose, ContainerExpense, ContainerBill, SupplierPay
 from django.db.models import Sum
 
-admin.site.site_header = 'Pyramid tech'
-admin.site.site_title = 'إدارة موقع بيراميد'
+admin.site.site_header = 'Tiger tech'
+admin.site.site_title = 'إدارة موقع تايجر'
 admin.site.index_title = 'الإدارة'
 
 

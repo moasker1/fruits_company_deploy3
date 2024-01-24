@@ -8,7 +8,7 @@ from decimal import Decimal
 class Supplier(models.Model):
     name = models.CharField(max_length=30)
     place = models.CharField(max_length=70, default='غير محدد')
-    date = models.DateField(default=timezone.now().date())
+    date = models.DateField(default=timezone.now)
     type = models.CharField(max_length=30, default='عمولة')
     opening_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
@@ -29,7 +29,7 @@ class Supplier(models.Model):
 class Seller(models.Model):
     name = models.CharField(max_length=30)
     place = models.CharField(max_length=70, default='غير محدد')
-    date = models.DateField(default=timezone.now().date())
+    date = models.DateField(default=timezone.now)
     seller_opening_balance = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
     total_money = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
     on_him = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
@@ -52,7 +52,7 @@ class Seller(models.Model):
 class Item(models.Model):
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-    date = models.DateField(default=timezone.now().date())
+    date = models.DateField(default=timezone.now)
 
     def __str__(self):
         return self.name
@@ -172,7 +172,7 @@ class Sale(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     total_sell_price = models.DecimalField(max_digits=15, decimal_places=2, editable=False)
     tool = models.CharField(max_length=50)
-    date = models.DateField(default=timezone.now().date())
+    date = models.DateField(default=timezone.now)
     meal = models.DecimalField(max_digits=15, decimal_places=2, editable=False, null=True)
 
     def save(self, *args, **kwargs):
@@ -271,7 +271,7 @@ class ContainerBill(models.Model):
 class SupplierPay(models.Model):
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     pay = models.DecimalField(max_digits=10, decimal_places=2)
-    date = models.DateField(default=timezone.now().date())
+    date = models.DateField(default=timezone.now)
 
     def __str__(self):
         return f"Payment to {self.supplier} - {self.date}"    
